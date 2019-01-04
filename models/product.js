@@ -56,18 +56,19 @@ module.exports = class Product {
                 .then(products => {
                     const prodsToWrite = [...products];
                     const changeAtIndex = prodsToWrite.findIndex(prod => prod.id === _id);
+                    const changedPrice = prodChanges.price;
 
                     if (changeAtIndex === -1) {
                         reject('no such file in data');
                     } else {
                         const prodToChange = { id: _id, ...prodChanges };
-                        console.log(prodToChange);
                         prodsToWrite.splice(changeAtIndex, 1, prodToChange);
                         fs.writeFile(p, JSON.stringify(prodsToWrite), (err) => {
                             if (err) {
                                 reject(err);
                             } else {
-                                resolve('product updated');
+                                const priceDiff = parseFloat(changedPrice) - parseFloat(products[changeAtIndex].price);
+                                resolve(priceDiff);
                             };
                         });
                     };

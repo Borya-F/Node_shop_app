@@ -49,7 +49,10 @@ exports.postEditProduct = (req, res, next) => {
 
 
     Product.updateProduct(productId, prodChanges)
-        .then((msg) => {
+        .then(priceDiff=> {
+            if(priceDiff !== 0) return Cart.updateCartItem(productId,priceDiff);
+        })
+        .then(()=>{
             res.redirect('/admin/products');
         })
         .catch(err => {
@@ -62,10 +65,10 @@ exports.postDeleteProduct = (req, res, next) => {
 
     Product.deleteProductById(productId)
         .then(prodPrice => {
-            Cart.removeProductFromCart(productId,prodPrice)
-            .then(()=>{
-            	res.redirect('/admin/products');
-            });
+            return Cart.removeProductFromCart(productId,prodPrice)
+        })
+        .then(()=>{
+            res.redirect('/admin/products');
         })
         .catch(err => {
             console.log(err);

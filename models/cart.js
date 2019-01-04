@@ -80,6 +80,32 @@ module.exports = class Cart {
 		});
 	};
 
+	static updateCartItem(prod_id,priceDelta){
+		return new Promise((resolve,reject)=>{
+			getCartFileContent()
+			.then(cart=>{
+				const updatedCart = {...cart};
+				const itemToDelIndex = updatedCart.cartProducts.findIndex(el=>el.itemId === prod_id);
+				if(itemToDelIndex !== -1){
+					const itemQuantity = updatedCart.cartProducts[itemToDelIndex].qty;
+					const totalPriceDelta = priceDelta * itemQuantity;
+					updatedCart.totalPrice += totalPriceDelta;
+
+					fs.writeFile(p, JSON.stringify(updatedCart), err=>{
+						if(err) reject(err);
+						resolve('item price has been adjusted in cart');
+					})
+
+				}else{
+					reject('no item found with matching id');
+				}
+			})
+			.catch(err=>{
+				reject(err);
+			});
+		})
+	}
+
 
 };	//end cart
 
