@@ -1,0 +1,17 @@
+extends ../layouts/main_layout.pug
+//- include ../mixins/addToCartForm.pug
+
+block content
+	if product
+		.centered
+			h1 #{product.title}
+			hr
+			div
+				img(src=product.imgURL, alt=product.title)
+			h2 price: $ #{product.price}
+			p #{product.desc}
+
+			//- +addToCartForm(product.id,product.price)
+			p don't forget to add to cart  btn from here
+	else
+		h1 product not found

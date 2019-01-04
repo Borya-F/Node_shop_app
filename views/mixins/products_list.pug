@@ -1,0 +1,27 @@
+include ./add_to_cart.pug
+
+mixin product_list(products, admin=false)
+
+	if prods.length > 0
+		.grid
+			each product in prods
+				article.card.product-item
+					header.card__header
+						h1.product__title #{product.title}
+					.card__image
+						img(src=product.imgURL,alt=product.title)
+					.card__content
+						h2.product__price $ #{product.price}
+						p.product__description #{product.desc}
+					if admin
+						.card__actions
+							a.btn(href="/admin/edit-product/" + product.id) edit
+							form(action="/admin/delete-product/" + product.id, method="POST")
+								button.btn(type="submit") delete
+					else
+						.card__actions
+							a.btn(href='/products/' + product.id) view detail
+							+addToCartForm(product.id,product.price)
+							
+	else
+		p2 no products present 

@@ -1,0 +1,5 @@
+extends ../layouts/main_layout.pug
+include ../mixins/products_list.pug
+
+block content
+	+product_list(products, admin=false)
