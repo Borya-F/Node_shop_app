@@ -42,12 +42,41 @@ module.exports = class Cart {
 
 				fs.writeFile(p,JSON.stringify(cartContent),(err)=>{
 					if(err){
-						return reject(err);
+						reject(err);
 					}else{
-						return resolve('product successfully added to cart');
+						resolve('product successfully added to cart');
 					};
 				});
 			});
+		});
+	};
+
+	static removeProductFromCart(prod_id,prod_price){
+		return new Promise((resolve,reject)=>{
+			//find prod in cart
+			getCartFileContent()
+			.then(cart=>{
+				const updatedCart = {...cart};
+				const itemToDelIndex = updatedCart.cartProducts.findIndex(el=>el.itemId === prod_id);
+
+				if(itemToDelIndex !== -1){
+					const itemQuantity = updatedCart.cartProducts[itemToDelIndex].qty;
+					const sumToRemove = itemQuantity * parseFloat(prod_price);
+
+					updatedCart.cartProducts.splice(itemToDelIndex,1);
+					updatedCart.totalPrice -= sumToRemove;
+
+					fs.writeFile(p,JSON.stringify(updatedCart),err=>{
+						if(err) reject(err);
+						resolve('item was successfully deleted from cart');
+					})
+				}else{
+					reject('no item found with matching id');
+				}
+			})
+			.catch(err=>{
+				reject(err);
+			})
 		});
 	};
 

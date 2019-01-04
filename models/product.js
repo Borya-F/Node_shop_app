@@ -29,9 +29,9 @@ module.exports = class Product {
                     updatedProducts.push(this);
                     fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
                         if (err) {
-                            return reject(err);
+                            reject(err);
                         } else {
-                            return resolve('product added');
+                            resolve('product added');
                         };
                     });
                 })
@@ -65,9 +65,9 @@ module.exports = class Product {
                         prodsToWrite.splice(changeAtIndex, 1, prodToChange);
                         fs.writeFile(p, JSON.stringify(prodsToWrite), (err) => {
                             if (err) {
-                                return reject(err);
+                                reject(err);
                             } else {
-                                return resolve('product updated');
+                                resolve('product updated');
                             };
                         });
                     };
@@ -84,6 +84,7 @@ module.exports = class Product {
     		.then(products=>{
     			const updatedProducts = [...products];
     			const delIndex = updatedProducts.findIndex(prod=>prod.id === _id);
+                const productPrice = updatedProducts[delIndex].price;
     			
     			if(delIndex === -1){
     				reject('no such product');
@@ -92,9 +93,9 @@ module.exports = class Product {
 
     				fs.writeFile(p,JSON.stringify(updatedProducts), (err)=>{
     					if(err){
-    						return reject(err);
+    						reject(err);
     					}else{
-    						return resolve('product successfully deleted from file');
+    						resolve(productPrice);
     					}
     				});
     			}
@@ -112,11 +113,11 @@ const getProductsFromFile = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(p, "utf8", (error, file) => {
             if (error) {
-                return reject(error);
+                reject(error);
             } else if (file === "") {
-                return resolve([]);
+                resolve([]);
             } else {
-                return resolve(JSON.parse(file));
+                resolve(JSON.parse(file));
             };
         });
     });
@@ -136,6 +137,6 @@ const getProductById = (_id) => {
             })
             .catch(err => {
                 throw err;
-            })
-    })
+            });
+    });
 }

@@ -22,7 +22,6 @@ exports.getProductDetail = (req,res,next) => {
 
 	Product.fetchProductById(prodId)
 	.then(prod=>{
-		console.log(prod);
 		res.render('shop/product_detail',{
 			pageTitle: prod.title,
 			product: prod
@@ -37,7 +36,8 @@ exports.getCart = (req,res,next) => {
 		console.log(cart);
 		res.render('shop/cart',{
 			activeNav: "cart",
-			pageTitle: "cart"
+			pageTitle: "cart",
+			cart: cart
 		})
 	})
 	.catch(err=>{
