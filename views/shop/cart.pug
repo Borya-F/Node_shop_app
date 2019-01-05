@@ -1,4 +1,14 @@
 extends ../layouts/main_layout.pug
 
 block content
-	h1 client cart page
+	if prods.length > 0
+		ul
+			each prod in prods
+				li 
+					p #{prod.title} (#{prod.qty})
+					form(action='/cartDeleteItem', method="POST")
+						input(type="hidden", value=prod.id, name="prodId")
+						input(type="hidden", value=prod.price, name="prodPrice")
+						button.btn(type="submit") remove from Cart
+	else
+		p no products currently in cart
