@@ -63,9 +63,18 @@ exports.postEditProduct = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.params.id;
 
+    let productPrice;
+
     Product.deleteProductById(productId)
         .then(prodPrice => {
-            return Cart.removeProductFromCart(productId,prodPrice)
+            productPrice = prodPrice;
+            return Cart.fetchCartFileContent();
+        })
+        .then(cart=>{
+
+            const cartItemIds = cart.cartProducts.map(item=>item.itemId);
+            if(cartItemIds.includes(productId)) return Cart.removeProductFromCart(productId,productPrice);
+            
         })
         .then(()=>{
             res.redirect('/admin/products');

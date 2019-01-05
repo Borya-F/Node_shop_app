@@ -43,9 +43,7 @@ exports.getCart = (req, res, next) => {
             const currentItems = cartToSend.cartProducts.map(el => el.itemId);
             let prodsArray = products.filter(prod => currentItems.includes(prod.id));
             prodsArray = prodsArray.map(prod => {
-                //find item in cartToSend with the same id as prod
-                //attach qty from that item to prodsArray.
-
+     
                 let item = cartToSend.cartProducts.find(el => el.itemId === prod.id);
                 let itemToReturn = { ...prod, qty: item.qty };
 
