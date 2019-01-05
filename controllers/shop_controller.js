@@ -31,18 +31,24 @@ exports.getProductDetail = (req,res,next) => {
 
 exports.getCart = (req,res,next) => {
 
+	let cartToSend;
+
 	Cart.fetchCartFileContent()
 	.then(cart=>{
-		return {
-			cart: cart,
-			products: Product.fetchAllProducts()
-		};
+		cartToSend = {...cart};
+		return Product.fetchAllProducts();
 	})
-	.then(compound=>{
-		console.log(compound);
+	.then(products=>{
+
+		const currentItems = cartToSend.cartProducts.map(el=>el.itemId);
+		const prodsArray = products.filter(prod=>currentItems.includes(prod.id));
+
+
 		res.render('shop/cart',{
-			pageTitle: cart,
-			activeNav: "cart"
+			pageTitle: "cart",
+			activeNav: "cart",
+			price: cartToSend.totalPrice,
+			prods: prodsArray
 		})
 	})
 	.catch(err=>{
