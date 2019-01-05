@@ -1,5 +1,5 @@
 extends ../layouts/main_layout.pug
-//- include ../mixins/addToCartForm.pug
+include ../mixins/add_to_cart.pug
 
 block content
 	if product
@@ -11,7 +11,7 @@ block content
 			h2 price: $ #{product.price}
 			p #{product.desc}
 
-			//- +addToCartForm(product.id,product.price)
-			p don't forget to add to cart  btn from here
+			+addToCartForm(product.id,product.price)
+			
 	else
 		h1 product not found

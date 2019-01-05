@@ -33,11 +33,16 @@ exports.getCart = (req,res,next) => {
 
 	Cart.fetchCartFileContent()
 	.then(cart=>{
-		console.log(cart);
+		return {
+			cart: cart,
+			products: Product.fetchAllProducts()
+		};
+	})
+	.then(compound=>{
+		console.log(compound);
 		res.render('shop/cart',{
-			activeNav: "cart",
-			pageTitle: "cart",
-			cart: cart
+			pageTitle: cart,
+			activeNav: "cart"
 		})
 	})
 	.catch(err=>{
