@@ -22,29 +22,11 @@ module.exports = class Product {
     }; //end constructor
 
     save() {
-
-        return db.execute(` 
-            INSERT INTO products (id, title, desc, price, imgURL)
-            VALUES (${this.id},${this.title},${this.desc},${parseFloat(this.price)},${this.imgURL});
-        `)
-        // return new Promise((resolve, reject) => {
-        //     getProductsFromFile()
-        //         .then(products => {
-        //             const updatedProducts = [...products];
-        //             console.log('updatedProds: ', updatedProducts);
-        //             updatedProducts.push(this);
-        //             fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-        //                 if (err) {
-        //                     reject(err);
-        //                 } else {
-        //                     resolve('product added');
-        //                 };
-        //             });
-        //         })
-        //         .catch(err => {
-        //             throw err;
-        //         });
-        // });
+        return db.execute(
+            `INSERT INTO products VALUES (?,?,?,?,?);`,
+            [this.id,this.title,this.price,this.desc,this.imgURL]
+        );
+        
     }; //end save
 
     ////////////////////static methods//////////////////
@@ -86,29 +68,9 @@ module.exports = class Product {
     }; //end update product
 
     static deleteProductById(_id) {
-    	return new Promise((resolve,reject)=>{
-    		getProductsFromFile()
-    		.then(products=>{
-    			const updatedProducts = [...products];
-    			const delIndex = updatedProducts.findIndex(prod=>prod.id === _id);
-                const productPrice = updatedProducts[delIndex].price;
-    			
-    			if(delIndex === -1){
-    				reject('no such product');
-    			}else{
-    				updatedProducts.splice(delIndex,1);
-
-    				fs.writeFile(p,JSON.stringify(updatedProducts), (err)=>{
-    					if(err){
-    						reject(err);
-    					}else{
-    						resolve(productPrice);
-    					}
-    				});
-    			}
-    		})
-    		.catch(err=> console.log(err));
-    	})
+    	return db.execute(
+            `DELETE FROM products WHERE products.id = ?`
+        ),[_id];
     }; //end deleteProductById
 
 }; //end class
@@ -127,6 +89,6 @@ const getProductById = (_id) => {
     console.log('retrieve el with id:', _id);
     return db.execute(` 
         SELECT * from products 
-        WHERE id = ${_id};
-    `);
+        WHERE products.id = ?;
+    `,[_id]);
 };

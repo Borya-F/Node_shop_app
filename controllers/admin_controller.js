@@ -50,15 +50,12 @@ exports.postEditProduct = (req, res, next) => {
 
 
     Product.updateProduct(productId, prodChanges)
-        .then(priceDiff=> {
-            if(priceDiff !== 0) return Cart.updateCartItem(productId,priceDiff);
-        })
-        .then(()=>{
-            res.redirect('/admin/products');
-        })
-        .catch(err => {
-            console.log(err);
-        })
+    .then(result=>{
+        console.log(result);
+    })
+    .catch(err=>{
+        console.log(err);
+    })
 }
 
 exports.postDeleteProduct = (req, res, next) => {
