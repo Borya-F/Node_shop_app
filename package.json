@@ -1,7 +1,7 @@
 {
-  "name": "templating_engines",
+  "name": "node_shopApp",
   "version": "1.0.0",
-  "description": "",
+  "description": "a practice shop like app for learning node",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
