@@ -3,15 +3,21 @@ const Cart = require('../models/cart.js');
 
 exports.getHome = (req, res, next) => {
 
-    Product.fetchAllProducts()
-    .then(([rows,fieldData])=>{
-        res.render('shop/shop', {
-            activeNav: "home",
-            pageTitle: "home",
-            prods: rows
+    Product.findAll({
+        order: [
+            ["createdAt", "DESC"]
+        ]
+    })
+    .then(products=>{
+        res.render('shop/shop',{
+            acticeNav: "home",
+            pageTitle: "shop",
+            prods: products
         });
     })
-    .catch(err=> console.log(err));
+    .catch(err=>{
+        console.log(err);
+    })
 };
 
 exports.getProductDetail = (req, res, next) => {
