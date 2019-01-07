@@ -5,6 +5,7 @@ const shopRoutes = require('./routes/shop_routes.js');
 const adminRoutes = require('./routes/admin_routes.js');
 const sharedController = require('./controllers/sharedController.js');
 
+
 const dev_port = 3000;
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(bodyParser.urlencoded({
 
 //path to static files
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 //Routes
 app.use(shopRoutes);

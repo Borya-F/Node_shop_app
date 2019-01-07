@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require("crypto");
+const db = require('../util/database.js');
 
 const p = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
 
@@ -21,29 +22,34 @@ module.exports = class Product {
     }; //end constructor
 
     save() {
-        return new Promise((resolve, reject) => {
-            getProductsFromFile()
-                .then(products => {
-                    const updatedProducts = [...products];
-                    console.log('updatedProds: ', updatedProducts);
-                    updatedProducts.push(this);
-                    fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve('product added');
-                        };
-                    });
-                })
-                .catch(err => {
-                    throw err;
-                });
-        });
+
+        return db.execute(` 
+            INSERT INTO products (id, title, desc, price, imgURL)
+            VALUES (${this.id},${this.title},${this.desc},${parseFloat(this.price)},${this.imgURL});
+        `)
+        // return new Promise((resolve, reject) => {
+        //     getProductsFromFile()
+        //         .then(products => {
+        //             const updatedProducts = [...products];
+        //             console.log('updatedProds: ', updatedProducts);
+        //             updatedProducts.push(this);
+        //             fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+        //                 if (err) {
+        //                     reject(err);
+        //                 } else {
+        //                     resolve('product added');
+        //                 };
+        //             });
+        //         })
+        //         .catch(err => {
+        //             throw err;
+        //         });
+        // });
     }; //end save
 
     ////////////////////static methods//////////////////
     static fetchAllProducts() {
-        return getProductsFromFile();
+        return getProductsFromDB();
     };
 
     static fetchProductById(_id) {
@@ -110,34 +116,17 @@ module.exports = class Product {
 
 //helper methods
 
-const getProductsFromFile = () => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(p, "utf8", (error, file) => {
-            if (error) {
-                reject(error);
-            } else if (file === "") {
-                resolve([]);
-            } else {
-                resolve(JSON.parse(file));
-            };
-        });
-    });
+const getProductsFromDB = () => {
+    return db.execute(`
+        SELECT * from products
+    `);
 };
 
 const getProductById = (_id) => {
-    return new Promise((resolve, reject) => {
-        getProductsFromFile()
-            .then(products => {
-                const prod = products.find(prod => prod.id === _id);
 
-                if (prod === undefined) {
-                    reject('no such product');
-                } else {
-                    resolve(prod);
-                };
-            })
-            .catch(err => {
-                throw err;
-            });
-    });
-}
+    console.log('retrieve el with id:', _id);
+    return db.execute(` 
+        SELECT * from products 
+        WHERE id = ${_id};
+    `);
+};

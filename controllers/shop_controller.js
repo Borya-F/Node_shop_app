@@ -4,16 +4,14 @@ const Cart = require('../models/cart.js');
 exports.getHome = (req, res, next) => {
 
     Product.fetchAllProducts()
-        .then(products => {
-            res.render('shop/shop', {
-                activeNav: "home",
-                pageTitle: "home",
-                prods: products
-            });
-        })
-        .catch(err => {
-            throw err;
+    .then(([rows,fieldData])=>{
+        res.render('shop/shop', {
+            activeNav: "home",
+            pageTitle: "home",
+            prods: rows
         });
+    })
+    .catch(err=> console.log(err));
 };
 
 exports.getProductDetail = (req, res, next) => {
@@ -21,12 +19,16 @@ exports.getProductDetail = (req, res, next) => {
     const prodId = req.params.id;
 
     Product.fetchProductById(prodId)
-        .then(prod => {
-            res.render('shop/product_detail', {
-                pageTitle: prod.title,
-                product: prod
-            });
+    .then(([rows,fieldData])=>{
+        console.log('el retrieved', rows[0]);
+        res.render('shop/product_detail',{
+            pageTitle: rows[0].title,
+            product: rows[0]
         });
+    })
+    .catch(err=>{
+        console.log(err);
+    })
 }
 
 exports.getCart = (req, res, next) => {
