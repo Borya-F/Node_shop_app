@@ -24,18 +24,17 @@ exports.getProductDetail = (req, res, next) => {
 
     const prodId = req.params.id;
 
-    Product.fetchProductById(prodId)
-    .then(([rows,fieldData])=>{
-        console.log('el retrieved', rows[0]);
+    Product.findByPk(prodId)
+    .then(product=>{
         res.render('shop/product_detail',{
-            pageTitle: rows[0].title,
-            product: rows[0]
+            pageTitle: product.title,
+            product: product
         });
     })
     .catch(err=>{
         console.log(err);
-    })
-}
+    });
+};
 
 exports.getCart = (req, res, next) => {
 

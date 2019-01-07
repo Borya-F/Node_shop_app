@@ -57,10 +57,18 @@ exports.postEditProduct = (req, res, next) => {
         imgURL: req.body.imgURL
     }
 
-
-    Product.updateProduct(productId, prodChanges)
-    .then(result=>{
-        console.log(result);
+    Product.findByPk(productId)
+    .then(product=>{
+        return product.update({
+            title: prodChanges.title,
+            price: prodChanges.price,
+            desc: prodChanges.desc,
+            imgURL: prodChanges.imgURL
+        },{fields:['title','price','desc','imgURL']});
+    })
+    .then(()=>{
+        console.log(`don't forget to update cart`);
+        res.redirect('/admin/products');
     })
     .catch(err=>{
         console.log(err);
@@ -70,25 +78,18 @@ exports.postEditProduct = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.params.id;
 
-    let productPrice;
-
-    Product.deleteProductById(productId)
-        .then(prodPrice => {
-            productPrice = prodPrice;
-            return Cart.fetchCartFileContent();
-        })
-        .then(cart=>{
-
-            const cartItemIds = cart.cartProducts.map(item=>item.itemId);
-            if(cartItemIds.includes(productId)) return Cart.removeProductFromCart(productId,productPrice);
-            
-        })
-        .then(()=>{
-            res.redirect('/admin/products');
-        })
-        .catch(err => {
-            console.log(err);
-        });
+    Product.findByPk(productId)
+    .then(product=>{
+        return product.destroy();
+    })
+    .then(()=>{
+        console.log(`don't forget to delete from cart as well`);
+        res.redirect('/admin/products');
+    })
+    .catch(err=>{
+        console.log(err);
+    })
+    
 };
 
 exports.getProducts = (req, res, next) => {
