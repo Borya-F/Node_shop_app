@@ -1,10 +1,15 @@
 const express = require('express');
+const chalk = require('chalk');
 const bodyParser = require('body-parser');
 const path = require('path');
 const shopRoutes = require('./routes/shop_routes.js');
 const adminRoutes = require('./routes/admin_routes.js');
 const sharedController = require('./controllers/sharedController.js');
 const sequelize = require('./util/database.js');
+const Product = require('./models/product.js');
+const User = require('./models/user.js');
+const id_gen = require('./util/id_generator.js');
+
 
 
 const dev_port = 3000;
@@ -24,23 +29,48 @@ app.use(bodyParser.urlencoded({
 //path to static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 //Routes
 app.use(shopRoutes);
 app.use('/admin',adminRoutes);
 
 app.use(sharedController.get404);
 
+Product.belongsTo(User,{
+	constraints: true,
+	onDelete: 'CASCADE'
+	// foreignKey: {
+	// 	allowNull: false
+	// }
+});
+
+User.hasMany(Product);
+
+
 sequelize.sync()
 .then(result=>{
+	return User.findByPk('b2a16684');
+})
+.then(user=>{
+	if(!user){
+		return  User.create({
+        id: id_gen.generate_user_id(),
+        name: "Borya Fishman",
+        email: "dummy-email@gmail.com"
+    	});
+	}else{
+		return user;
+	}
+})
+.then(user=>{
+	console.log(chalk.yellow('Server is running on port 3000'));
 	app.listen(dev_port);
 })
 .catch(err=>{
-	console.log()
-})
+	console.log(chalk.red(err));
+});
 
 
-console.log('Server is running on port 3000');
+
 
 
 
