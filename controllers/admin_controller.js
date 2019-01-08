@@ -14,6 +14,8 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 
+    console.log(chalk.yellow(req.user));
+
     const title = req.body.title;
     const price = req.body.price;
     const imgUrl = req.body.imgURL;
@@ -24,7 +26,8 @@ exports.postAddProduct = (req, res, next) => {
         title: title,
         price: price,
         desc: desc,
-        imgURL: "https://picsum.photos/150/150/?random"
+        imgURL: "https://picsum.photos/150/150/?random",
+        userId: req.user.id
     })
     .then(result=>{
         res.redirect('/admin/products');

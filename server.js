@@ -35,6 +35,22 @@ app.use('/admin',adminRoutes);
 
 app.use(sharedController.get404);
 
+//User Middleware
+// app.use((req,res,next)=>{
+// 	User.findByPk('b2a16684')
+// 	.then(user=>{
+// 		console.log(chalk.yellow(user.id));
+// 		req.user = user;
+// 		next();
+// 	})
+// 	.catch(err=>console.log(err));
+// })
+// 
+app.use((req,res,next)=>{
+	console.log(chalk.green('this is  NOTTTTTTTT working'));
+	next();
+});
+
 Product.belongsTo(User,{
 	constraints: true,
 	onDelete: 'CASCADE'
