@@ -1,6 +1,7 @@
 const Product = require('../models/product.js');
 const Cart = require('../models/cart.js');
-const crypto = require("crypto");
+const id_gen = require('../util/id_generator.js');
+const chalk = require('chalk');
 
 
 exports.getAddProduct = (req, res, next) => {
@@ -19,7 +20,7 @@ exports.postAddProduct = (req, res, next) => {
     const desc = req.body.desc;
 
     Product.create({
-        id: crypto.randomBytes(8).toString("hex"),
+        id: id_gen.generate_prodcut_id(),
         title: title,
         price: price,
         desc: desc,
@@ -67,7 +68,7 @@ exports.postEditProduct = (req, res, next) => {
         },{fields:['title','price','desc','imgURL']});
     })
     .then(()=>{
-        console.log(`don't forget to update cart`);
+        console.log(chalk.yellow(`don't forget to update cart`));
         res.redirect('/admin/products');
     })
     .catch(err=>{
@@ -83,7 +84,7 @@ exports.postDeleteProduct = (req, res, next) => {
         return product.destroy();
     })
     .then(()=>{
-        console.log(`don't forget to delete from cart as well`);
+        console.log(chalk.yellow(`don't forget to update cart`));
         res.redirect('/admin/products');
     })
     .catch(err=>{

@@ -1,7 +1,8 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../util/database.js');
 
-const Product = sequelize.define('product', {
+const Sequelize = require('sequelize');
+const db = require('../util/database.js');
+
+const Product = db.define('product', {
     id: {
     	type: Sequelize.STRING,
     	primaryKey: true,
