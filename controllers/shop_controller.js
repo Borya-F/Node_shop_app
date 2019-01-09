@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 const Product = require('../models/product.js');
 const Cart = require('../models/cart.js');
 
@@ -38,35 +40,20 @@ exports.getProductDetail = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
 
-    let cartToSend;
-
-    Cart.fetchCartFileContent()
-        .then(cart => {
-            cartToSend = { ...cart };
-            return Product.fetchAllProducts();
+    req.user.getCart()
+    .then(cart=>{
+        return cart.getProducts();
+    })
+    .then(products=>{
+        res.render('shop/cart',{
+            pageTitle: Cart,
+            prods: products,
+            activeNav: 'cart'
         })
-        .then(products => {
-
-            const currentItems = cartToSend.cartProducts.map(el => el.itemId);
-            let prodsArray = products.filter(prod => currentItems.includes(prod.id));
-            prodsArray = prodsArray.map(prod => {
-     
-                let item = cartToSend.cartProducts.find(el => el.itemId === prod.id);
-                let itemToReturn = { ...prod, qty: item.qty };
-
-                return itemToReturn;
-            });
-
-            res.render('shop/cart', {
-                pageTitle: "cart",
-                activeNav: "cart",
-                price: cartToSend.totalPrice,
-                prods: prodsArray
-            })
-        })
-        .catch(err => {
-            throw err;
-        });
+    })
+    .catch(err=>{
+        console.log(chalk.red(err));
+    });
 };
 
 exports.postCartDelItem = (req, res, next) => {

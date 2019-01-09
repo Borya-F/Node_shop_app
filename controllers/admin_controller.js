@@ -20,7 +20,7 @@ exports.postAddProduct = (req, res, next) => {
     const desc = req.body.desc;
 
     req.user.createProduct({
-        id: id_gen.generate_prodcut_id(),
+        id: id_gen.generate_hex_id(),
         title: title,
         price: price,
         desc: desc,

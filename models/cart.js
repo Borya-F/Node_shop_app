@@ -7,7 +7,11 @@ const Cart = db.define('cart',{
 		primaryKey: true,
 		unique: true,
 		allowNull: false
-	}
+	},
+	userId: {
+      type: Sequelize.STRING,
+      unique: true
+  }
 });
 
 module.exports = Cart;

@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //setting up mock user
 app.use((req,res,next)=>{
-	User.findByPk('b2a16684')
+	User.findByPk('4672478d')
 	.then(user=>{
 		req.user = user;
 		next();
@@ -78,18 +78,16 @@ Cart.belongsToMany(Product, {through: CartItem});
 Product.belongsToMany(Cart, {through: CartItem});
 
 
-
-
-db.sync({force:true})
-// db.sync()
+// db.sync({force:true})	//use when schema
+db.sync()					//use when no schema changes
 .then(result=>{
-	return User.findByPk('b2a16684');
+	return User.findByPk('4672478d');
 })
 .then(user=>{
 	if(!user){
 		return  User.create({
-        id: id_gen.generate_user_id(),
-        name: "Borya Fishman",
+        id: id_gen.generate_hex_id(),
+        name: "dummy_user",
         email: "dummy-email@gmail.com"
     	});
 	}else{
@@ -97,6 +95,11 @@ db.sync({force:true})
 	}
 })
 .then(user=>{
+	return user.createCart({
+		id: id_gen.generate_hex_id()
+	})
+})
+.then(cart=>{
 	console.log(chalk.yellow('Server is running on port 3000'));
 	app.listen(dev_port);
 })
