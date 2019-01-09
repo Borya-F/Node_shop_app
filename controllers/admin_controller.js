@@ -97,7 +97,8 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll({
+
+    req.user.getProducts({
         order: [
             ['createdAt', 'DESC']
         ]
