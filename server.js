@@ -1,17 +1,30 @@
+//node modules
 const express = require('express');
-const chalk = require('chalk');
 const bodyParser = require('body-parser');
 const path = require('path');
+
+//debug
+const chalk = require('chalk');
+
+//db connection
+const db = require('./util/database.js');
+
+//helper functions
+const id_gen = require('./util/id_generator.js');
+
+//routes/controllers
 const shopRoutes = require('./routes/shop_routes.js');
 const adminRoutes = require('./routes/admin_routes.js');
 const sharedController = require('./controllers/sharedController.js');
-const db = require('./util/database.js');
+
+//models
 const Product = require('./models/product.js');
 const User = require('./models/user.js');
-const id_gen = require('./util/id_generator.js');
+const Cart = require('./models/cart.js');
+const CartItem = require('./models/cart-item.js');
 
 
-
+// parameters
 const dev_port = 3000;
 const app = express();
 
@@ -29,7 +42,7 @@ app.use(bodyParser.urlencoded({
 //path to static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+//setting up mock user
 app.use((req,res,next)=>{
 	User.findByPk('b2a16684')
 	.then(user=>{
@@ -41,18 +54,13 @@ app.use((req,res,next)=>{
 	});
 });
 
-
-
-//Routes
+//Routes instantiation
 app.use(shopRoutes);
 app.use('/admin',adminRoutes);
-
 app.use(sharedController.get404);
 
 
-
-
-
+//Schema Associations
 Product.belongsTo(User,{
 	constraints: true,
 	onDelete: 'CASCADE'
@@ -61,10 +69,19 @@ Product.belongsTo(User,{
 	// }
 });
 
-User.hasMany(Product);
+User.hasMany(Product); //optional
+User.hasOne(Cart);
+Cart.belongsTo(User); //optional
+
+//many to many - creates an intermediary table Cart:Product
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
 
 
-db.sync()
+
+
+db.sync({force:true})
+// db.sync()
 .then(result=>{
 	return User.findByPk('b2a16684');
 })

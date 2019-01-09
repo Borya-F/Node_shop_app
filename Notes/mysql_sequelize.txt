@@ -1,0 +1,66 @@
+DB connections:
+
+First we will need to download the mysql database.
+here there are 2 conponenets:
+mysql db server
+mysql workbench
+
+Workbench is just the GUI to interact with the db and the db server.
+The db server would require us to create a username and a pass.
+by default the user is root
+*we can  however create a new user and grant the user the same priviledges as root, however we won't do it this time.
+Since that data is sensitive I have stored the credentials in a separate file and set up .gitIgnore file to ignore watching it. 
+
+There are 2 main ways to connecting to the db for which we will use sequelize (node package).
+The first is by creating a direct connection to the db (however this will require us to end the connection manually).
+Alternitevly we can create a connection pool which automatically manages the connections (will need to learn more about that).
+
+To connect to the db I created a file  which exports the connection (which I specified in the .gitIgnore file):
+const sequelize = new Sequelize(<db_name>,<db_user>,<db_user_password>,{
+	dialect: 'mysql',
+	host: 'localhost'
+});
+
+Now every time we would need to connect to the db we could use this connections. 
+
+In this module there will be a few points to understand:
+1. creating schemas
+2. creating associations
+
+Consider the previous product model.
+A class just like interface just like a JS object is just a senitized object that has parameters.
+In theory (and apart from specific Object methods, or memory management), they just server as an object structure.
+Because of this we can change the class to an Sequelize object and reuse it in the application.
+
+The product model will now outline the Product schema (db table structure).
+
+
+const Sequelize = require('sequelize'); //this returns the Sequelize Object that has methods to do with the ORM (object relational model).
+const db = require('../util/database.js'); // this is the connection to the db.
+
+const Product = db.define('product', {
+    id: {
+    	type: Sequelize.STRING,
+    	primaryKey: true,
+    	unique: true,
+    	allowNull: false
+    },
+    title: {
+    	type: Sequelize.STRING,
+    	allowNull: false
+    },
+    price: {
+    	type: Sequelize.DOUBLE,
+    	allowNull: false
+    },
+    desc: {
+    	type: Sequelize.STRING,
+    	allowNull: true
+    },
+    imgURL: {
+    	type: Sequelize.STRING,
+    	allowNull: true
+    }
+})
+
+module.exports = Product;
