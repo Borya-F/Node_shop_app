@@ -1,0 +1,85 @@
+JS referesher
+
+Weakly typed - No explicit type assignemnts, DataTypes can be switched dynamicly.
+Object Oriented - Data can be organized into Objects, allow for primitive and reference types.
+Versitile - Runs in the browser and directly on PC/Server. 
+
+Variable Declarations
+var - function scoped mutable
+let -  block scope mutable
+const - block scope immutable
+
+types: String, Number, Boolean, Objects.
+
+Collections:
+Object - key-value pair stirct to String:Any
+Map - key-value pai with Any:Any
+Array - a collection defined by index:value
+Set - a collection of unique values
+
+Functions:
+
+function functionName(...arguments){
+	...execution code...
+};
+
+let functionName = function(...arguments){
+	...execution code...
+};
+
+function functionName = (...arguments) =>{
+	...execution code...
+};
+
+Spread and Rest operators:
+
+Arrays in JS are reference types so that in the case of:
+let arr1 = [item1, item2, item3];
+let arr2 = arr1;
+
+arr2 would reference arr1 and so any changes made to arr2 would be reflected in arr1. 
+
+if we use: arr2 = [arr1];
+then we  would get an array inside another array which would not work for us either.
+
+however what we can do is to use the spread operator in the following way
+let arr2 = [...arr1]; that would copy all the values in arr1 into arr2.
+The spread operator can be also applied to objects.
+
+The rest operator does the exact oposite. 
+Assume we've got a function and we're not sure how many arguments it should take. We can then use the rest operator to include a multitude of them.
+
+function fnName = function(...args){
+	return args;
+};
+
+Destructuring:
+
+Let's imagine that we only need a subset of properties form an object. 
+we can use the destructuring syntax to only pull out a value.
+
+const personSubSet = ({name, age}) => {
+	console.log(name);
+	console.log(age);
+}
+
+personSubSet(Jacob);
+> Jacob
+> 24
+
+also destructuring cna  work in the following way:
+const {name,age} = personObject;
+
+This will create two new local constants with titled name and age that would hold the same value as the name and the age of the personObject.
+
+
+
+
+
+
+
+
+
+
+
+

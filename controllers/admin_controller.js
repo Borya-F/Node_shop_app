@@ -14,20 +14,17 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 
-    console.log(chalk.yellow(req.user));
-
     const title = req.body.title;
     const price = req.body.price;
     const imgUrl = req.body.imgURL;
     const desc = req.body.desc;
 
-    Product.create({
+    req.user.createProduct({
         id: id_gen.generate_prodcut_id(),
         title: title,
         price: price,
         desc: desc,
         imgURL: "https://picsum.photos/150/150/?random",
-        userId: req.user.id
     })
     .then(result=>{
         res.redirect('/admin/products');
@@ -40,10 +37,13 @@ exports.postAddProduct = (req, res, next) => {
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.id;
 
-    Product.findByPk(productId)
+    req.user.getProducts({
+        where: {id: productId}
+    })
     .then(result=>{
+        const product = result[0];
         res.render('admin/edit_product', {
-            product: result
+            product: product
         });
     })
     .catch(err=>{

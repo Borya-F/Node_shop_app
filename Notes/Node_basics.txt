@@ -1,0 +1,168 @@
+How the web works:
+
+-A user or a client is visitng a webpage
+-The user enters a url into the browser (can be done implicetly)
+-The Domain lookup works on the webpage and sends a request to a server with the specific ip address that the DNS resolved.
+-the developer writes the code that runs on that ip address and defines how to interpret requests embodied in the url.
+-the program then sends a response to the client 
+
+Requests and responses have two parts: Headers and Bodys.
+The headers contain meta data about the request (like description).
+Requests and responses are sent through a protocol usually HTTP and HTTPS.
+
+
+
+Creating a Node server:
+Node ships with some core modules like path, http, fs, and others. other modules can be downloaded and attached later. 
+
+http - launch a server, send http requests to other servers
+https - do the same as http but through SSL (secure socket layer)
+
+importing files in Node js is done through the require key word:
+const http = require('http');
+
+An important note is that if we don't add './' in'./packageName' node will look for a global file. So even if we had a local file called packageName.js
+and we require('packageName') it would look for package in the globally installed packages that come with Node. Or alternitevly packages that we have installed globally.
+
+To start a minimal serber we can use the http packege with:
+
+------------
+const http = require('http');
+const port = 3000;
+
+const server = http.createServer((req,res)=>{
+	console.log(`server is running on port: ${port}`);
+});
+
+server.listen(3000);
+------------
+
+the http object has a create  server function that accepts an annonymous function called the request listener. We can either write it explicetly or implicetly as an annonymous function.
+
+The request listener has two arguments: request and response. Once a request parameter is listened to we can construct the response parameter and send it back. 
+
+Once the server as been created, Node enters the Node event loop (more on that later). We use the listen function on the created server to listen for requests.
+
+The Node event loop keeps on running for as long as there are event listeners registered.
+The only way that we can encode an exit is by using the process.exit command.
+
+Sending Responses:
+When sending a response we need to do two things:
+-set headers or use a package that does that automatically for us
+-res.write() contains the response.
+-we can use res.write() multiple times one after the other and it would return in 
+-we must end the writing process by writing res.end();
+
+Routing:
+When listening to the request there are a couple of things we should always look for:
+-the route which is accessible through req.url so that we can set:
+const url = req.url
+-the request type: POST/GET
+const method = req.method
+
+We can then configure the code to act differently if different urls are being sent request to.
+
+we can force the user to redirect anywhere by declaring the redirect in the header:
+res.setHeader("Location","/");
+There is also a dedicated status code for redirect: 302
+we can set it with: 
+res.statusCode = 302
+
+Streams and Bufferes:
+
+Take for example the req we sent. Node is reading it by chunks:
+Stream ->req_body_1 ------- req_body_2 ---- req_body_3 --- ........ ---- req_body_n ->Fully parsed
+With small requests this might not be important but when dealing with a bigger file this might be useful because we can break down the. tasks into chuncks and simulate paralellism.
+
+A buffer allows to work with work chunks and them release them as they are done.
+
+** At this point the code didn't act as intended and I had no idea why. There was a stupid mistake:
+Consider the Post requestmade from the HTML:
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+	</head>
+	<body>
+		<form action="/message" method="POST" >
+			<input type="text" name="message"/>
+			<button type="submit">submit</button>
+		</form>
+	</body>
+</html>`); 
+
+The form sends the information upon submit. The name tag was on the form and not on the input.
+So the lesson here is when we send out the form each field must have a name to be sent over to the server.
+
+Sync vs non-Sync code:
+Making code run synchronously means that it would execute code according to logical progression while waiting on tasks to complete.
+In some cases when we need the server to perform a task we wouldn't want it to stall so the user experience does not get interrupted.
+In those cases we can use a non syncronous methods so it runs in the backgrund or performs the tasks when it is not tasked with anything else.
+
+
+Single Thread, Event Loop, and Blocking code:
+NodeJS is single threaded, meaning that it has only one process running at any time.
+The Event loop is a construct that deals with Event handling callbacks. 
+When Node gets launched and the event loop initialized. The Event loop sends tasks to worker pools which are detached from the event loop, and can do the "heavy lifting". The worker pool unline Node can run on multiple threads, and therefor perform multiple tasks simultaniously. 
+
+The event loop:
+1. The first thing that the event loop does is check for temporal callbacks like setTimeout, setInterval.
+2. Next it checked for any completed callbacks (Execute I/O-related like Disk and network ops, callbacks that were deffered).
+3. Th Event loop will then enter the poll phase where it would look for new I/O related events and execute their callbacks.
+	if not possible it will defer the execution of those events and send them into the pending callback stack.
+	It will also chack back to see if any timer callebacks are due to be executed as well if so, it will jump back to 1. 
+4. The next phase is the check phase where the code executes setImmidietly() callbacks.
+5. The second to last stage will make node execute any close event callbacks. 
+6. check exit program conditions (no remaining event hadlers).
+
+Summary of execution:
+Timers
+Pending callbacks
+Poll callbacks
+Check (setImidiate callbacks)
+execute close event callbacks
+Check number of remaining callback references
+
+In the case of a server using the http package we always have the listen function running as a callabck and therefor Node will not exit the event loop. 
+
+Using the Node module System:
+There are three ways we can export contents of a local package:
+
+module.exports = functionName;
+module.exports = {
+	"key1": functionName,
+	"key2": varName
+}
+
+exports.namedExport = functionName;
+
+Wrap up:
+How the internet works: Client->Request->Server->Response->Client
+Node LifeCycle and Event loop: initiation->timers->pending callbacks->poll callPacks->check callbacks->close event callbacks->exit condition.
+Though Node is (singlet-hreaded) blocking it uses the allocation to workers to be multithreaded.
+Request data through the method/url parameters and how it passes data in buffers. 
+Avoid double responses with return statements.
+Response data built from headers, response codes, res.write().
+Node core modules and file exports. 
+
+
+More on the event loop:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

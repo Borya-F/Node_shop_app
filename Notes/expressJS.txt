@@ -1,0 +1,187 @@
+What is express and why are we using it
+
+Though we can write all the necesary server-side logic with plain NODE/js, express can simplify our code and take care of things like routing, buffering and other operations that we simpluy don't need to concern ourselves if using the express package. Since express is a third party package we will need to install it using NPM and save it to our dependencies. Note that this package is used accross the app including in production and therefor we only use the --save flag and not the --save-dev flag. 
+As before we include it in the app using the reuiqre funciton. 
+The express package exports a function and so we can chime in by creating an app variabe that is equal to that function.
+
+const app = express();
+
+Finally, since express will be used to parse HTTP request we include it in our server as the request handler function.
+
+const server = http.createServer(app);
+server.listen(port_number);
+
+Express is about middleware. The following steps describe where express falls in and is useful:
+Request
+MiddleWare - req,res,next -> res.next()
+Middleware - req,res,next -> res.send()
+Response
+
+Express funnels requests through an array of functions which allows us as the developers to segment the code better.
+app.use((req,res,next)=>{}) allows us to transform request data into the next step that we require. 
+
+The req and res objects are already familiar to us, and we use them for accepting and sending back responses. 
+The next() function allows express to move from one middleware to the next for further funneling and data transformation.
+
+Apart from the previously explored res.setHeader and res.write, express allows for another helper function called res.send().
+we can pretty much send anything with that function.
+res.send('<h1>Hello froim middleware with send()</h1>');
+
+One other thing we can do with express is shorten the server creation method to.
+previously:
+const app = express();
+const server = http.createServer(app);
+server.listen(port);
+
+now:
+const app = express();
+app.listen(port);
+
+handling different routes:
+
+the app.use() function can accept an optional parameter for routes.
+app.use('/route',(req,res,next)=>{});
+
+An important note is that we need to go from the specific to the vague with this. so that if we had used '/' as the route at the top, since every route uses it, the app.use would fire the middleware, so we should always start with: app.use('/routeName',...) before going with ('/');
+
+to parse requests we can use a third body package called body-parser
+npm install body-parser --save
+
+we can use it in the app by:
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use would respond to any http request. We can however limit it to a specific type of request by using:
+app.get('/route',(req,res,next)=>{...});
+app.post('/route',(req,res,next)=>{...});
+app.put('/route',(req,res,next)=>{...});
+
+Other verbs are patch, delete.
+
+Using the express router:
+Often we would want to segment out different routes to be handled by different files. 
+To do that we would create a folder called routes, in there we can create files that would act as mini-express apps.
+
+For example suppose we want an admin route
+we would create an admin.js file
+we would import the express package
+we would execute the Router function by: const router = express.Router();
+we would handle the relevant HTTP request by using: router.get('/route',(req,res,next)=>{...});
+finally we would export the local router in the module.exports object;
+
+Now to make this work with the server we would import the files at the top with:
+const adminRoutes = require('./routes/routeNames');
+
+and in the app we would use:
+app.use(adminRoutes); 
+
+its likelly that we would have multiple such router files but the order we include them would not matter.
+
+Setting a 404 page:
+currently, if a request is made to an endpoint that is not supported, we will get an error saying we can't get the requested route.
+We can solve this by creating a '/' route that handles that
+
+app.use((req,res,next)=>{
+	res.send('<h1>page not found</h1>');
+});
+
+we can chain a status code or a setHeader before we send a response:
+res.status(400).send(...);
+res.setHeader('content-type','text/html').send(...);
+
+Filtering paths:
+Often the reason we segment out routes is becausde they use a different path in the url.
+For instance the admin routes are likely to be /admin/add-product;
+
+we can either include those in the. router.get('/admin/add-product');
+or we can include them in the server.js file by specifying the parent folder path app.use('/admin', adminRoutes);
+
+The best way however, is to use the Router object of the express Package.
+const router = express.Router();
+
+We can then open a routes folder where we define routes for each one:
+
+//routeName.js:
+const express = require('express');
+const router = express.Router();
+
+router.get('/path', (req,res,next)=>{ route request handler});
+router.post('/path', (req,res,next)=>{ route request handler});
+router.put('/path', (req,res,next)=>{ route request handler});
+router.verb('/path', (req,res,next)=>{ route request handler});
+
+module.exports = router;
+
+
+//server.js
+...
+const routeNameRoutes = require('./path to routeName.js');
+app.use(routeNameRoutes);
+app.use('subRoute/',routeNameRoutes);
+
+serving static files:
+Sometimes out html page will require other files like css, js files. but the client doesn't have access to our file structure (and it shouldn't unlesss we decide to expose it).
+We can then create a folder called public that we will expose and let the client make requests to those files without exposeing anything else. 
+
+Once we created the folder and added the files we can add the following to our server:
+
+//server.js
+app.use(express.static(path.join(__dirname,'public')));
+
+now the client can make requests to files in public:
+//page.html
+<link rel="stylesheet" href="./path to file in the public folder">
+
+another good optimization is to get a quick access to the root directory of the project (the directory from which the process in run - server.js)
+We can create another folder with utility functions called util. In there we can create our own path.js file and in it expose the rootdirectory:
+
+//path.js (in util)
+const path = require(path.js);
+module.exports = path.dirname(process.mainModule.fileName);
+
+What is happening here:
+path.dirname('filename') - returns the path to the folder location in which the file is located. 
+process.mainModule.filename - returns the pathh to the initial script (in our case server.js);
+
+In out server.js or any other file we can now expose the root dir by:
+const rootDir = require(..pathto../util/path);
+
+__dirname is the current working directory (directory from which it is called);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

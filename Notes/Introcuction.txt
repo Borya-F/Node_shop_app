@@ -1,0 +1,25 @@
+Introduction
+
+Node is a javascript runtime.
+While js is a programming language used in the browser to interact with the page, Node allows to run JS on the server (any machine).
+
+Node uses V8 which is a JS engine built by google which runs JS on the browser. The engine takes JS code and compiles it to machine code.
+V8 itself is written in C++, though no knowlege of C++ is necessary to work with V8. Node adds functionality that is necessary outside of the browser like working with the file system or other elements of machines. 
+
+JS on the server
+
+We would typically us Node to write server side code. 
+Traditionaly a user would use the browser to interact with a client side app. The browser would render HTML, CSS, and JS to display elements and let the user interact with the page like clicking a button or scrolling or writing something into a form. 
+
+When a user makes a request to a website (using the url or http requests  like get and post), a request is sent to a url (an adress of a server), and then the server will need to execute some code that will process the request and then will sent a response. Often the response would be some HTML code, but it doesn't have to be. 
+
+That segmentation is usefull because there are often tasks that we don't want to do from inside the broewser. Tasks like those may include: authentication, connection to a DB, for any performance or security reasons.
+Similerly all that the user souldn't see but needs to be executed, also called the business logic, will be run from  the server and not on the client. 
+
+**Nodejs is not limited to run on a server. We can execute JS on node anywhere. 
+
+In terms of web development Node runs and  maintains the servers, executes business logic, and sends back responses. 
+
+There are two main ways to execute NodeJS code:
+1. REPL (Read Eval Print Loop)
+2. Execute files with node 

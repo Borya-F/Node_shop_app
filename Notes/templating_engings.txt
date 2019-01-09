@@ -1,0 +1,502 @@
+Quick summary of templating engines:
+There are a few templating engines that allow integration of js right into the html to extend its markup capabilities.
+examples of those include: pug (previously jade), handlebars, ejs.
+
+Some of those already have integrations with express while others don't.
+To set those first install them using NPM, saving them to the production dependencies.
+
+then in the server.js file use app.set to
+app.set('view engine', 'pug');
+app.set('views', 'views');
+
+the first sets the rendering/templateing engine
+the second parametr outlines where to find the views. (technnically in this case it can be ommited  since views is set to views by default).
+
+now recall how we manage information transfer right now from the client to the server.
+The user interacts with the clinet, where the url sends get requests to the server.
+before we used pug we served static files using the following command:
+
+router.get('path',(req,res,next)=>{
+	res.sendFile(path.join(rootdir, 'views','page.html'));
+});
+
+one of the ways a user could perform a post request is by using a form with an action and a method attributes:
+<form action="/routeToPostTo" method="POST">...</form>
+
+To handle it we use the body-parser middleware:
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
+
+and  handled  the request on the route itself:
+router.post('/pathToPostTo',(req,res,next)=>{
+	...handle code here
+});
+
+to recieve any informations sent from the form we can use the req.body.param (where param is the name attirbute of the input field in the form).
+
+Passing information back to the user.
+Oftern times  we  would like to pass information back to the user through the request handler.
+Currently we have an array stored right in the add-product page.
+It will work for now but is a bad idea for production.
+Reason being is that we often want to separate information between users and sessions. 
+That array will stay an element belonging to the JS stack until the node process is terminated. So currently it is shared across anyone who has access to the url.
+That will chenge in the future.
+
+When using a rending/templating engine like pug, instead of sending entire files we can just rander pug files.
+Using pug allows us to break the html into smaller componenets
+
+suppose we want to have a file for the head and the header separated from the body.
+We can than create a layout which would be the building block for our html page.
+into that layout we can insert named block
+
+block styles
+	
+block content
+
+when we send a response back to the client we tell express to render a file that:
+extends PathTolayout
+
+block styles 
+	link to styles used in the code block
+
+block content
+	pug code to insert into the main layout where it says block content
+
+
+The way we tell express to render the particlular pug file is by using: 
+app.render('fileToRander').
+
+Further we can add another paramter in there which is an object we would like to pass to the client as data
+app.render('fileToRender',{
+	title: 'some name',
+	someString: 'string',
+	someNumber: 4,
+	someArray = [....]
+});
+
+in our pug template we can use interpolation to extract those keys.
+pug uses the following syntax: #{keyname}, as appose to the JS string interpolation ${variable name} (or angular which uses {{key}});
+
+Furthermore Pug allows for if/else blocks for loops and some js to be used right from the HTML page. 
+Its important to note that every templating engine has its own benefits and detriments. 
+Pug uses a specific syntax which might not be the most comfertable for everyone. 
+
+The next step in the development is creating the structure for MVP architecture. 
+MVP stands for model view controller, and is good for separation of concerns.
+The model stands for the structure of the data
+the view is responsible for the rendering of the HTML and the cotent display
+the controller is the part responsible for managing the data.
+
+To create the controller we can create a new folder called controllers and put move the request listeners there.
+Following, in each of the routes we can get rid off of the (req,res,res)=>{...} function and move it to the conroller files
+as before to connect the code we can require the controller file in the routing files and exporrt the request listener functions in the controller files.
+
+
+Adding data to a file.
+There are a few ways to store data. prevously we have stored data directly in a js variable. Though it works the problem is that it is presistant across any user using the same instace of the database. That is both a security problem since we want to separate information as well as an inefficient way of storing information.
+The best way would be ofcoarse to store everything in a database, which we will do later. For now the intermediary solution is to store things in a file as a json string.
+
+once we create the folder where the data will be stored, we can save it from the model.
+so thats an  architectural decision but in the tutorials the save method is in the model.
+The fetch method is also located as a static method in the model. 
+
+First lets focus on the savemethod.
+in order to save a json we will need a location to save to:
+
+const p = path.join(process.mainModule.filename,'data','products.json');
+
+As before we will use the path.join method to create a location path that is readable on all operating systems.
+the process.mainModule.filename returns the home directory path
+data is the name of the folder where we will temporarily store data.
+and products.json will be the json file containing the data we will save. 
+
+before we start adding anything we need to check if there is anything already contained in the json file.
+To do that we will read in the file using fs (node's file system module):
+
+fs.readFile(p,(err,fileContent)=>{
+	let products = [];
+	if(!err){
+		products = JSON.parse(fileContent);
+	};
+
+	products.push(this);
+	fs.writeFile(p, JSON.stringify(products),err=>{
+		console.log(err);
+	});
+});
+
+We can use the parse and stringify methods from the JSON library  to encode and decode JSON strings.
+Thoughh JSON has a similar structure to JS objects, they are actually key, value pairs of strings, separated by a semicolon.
+JSON.parse - parses the json into JS.
+JSON.stringify - turns js objects and turns them to JSON strings. 
+
+so when we turn what is in the file (json strings) into a js array by storing them in products:
+products = JSON.parse(fileContent);
+we then push a new Product object into the products array
+finally we turn back the array into the JSON structure and store it
+fs.writeFile(p,JSON.stringify(products),err=>{
+	console.log(err);
+});
+
+For small files we can read/write the files directly, however when files get to the 10mb size we should be using streams instead.
+
+Now for the fetchAll() method:
+const p = path.join(process.mainModule.filename,'data','products.json');
+	
+fetchAll(){
+	fs.readFile(p,(err,fileContents)=>{
+		if(err){
+			return [];
+		}else{
+			return JSON.parse(fileContents);
+		};
+	});
+};
+
+
+two error can happen:
+the first is in the readFile Method and the other in the pug file.
+The first error will be thrown if no such file exists. we solve thhat by simply returning an empty array.
+the second error will be thrown by the pug compiler because it is looking for a length parameter for prods.
+If prods is nothing that there is no .length parameter, which will throw a compiler error. 
+
+but.readFile is an Async function (unlike readFileSync), and so it will execute only adter it returns (most likely).
+There a number of ways to deal with that:
+1. pass a callback function into fetchAll.
+2. convert the fs.readFile into fs.readFileSync
+3. create a promise
+
+personally I would deal with it using a promise howsever the tutorial uses the inclusion of the call back method. 
+Remember that the save() and fetchAll are called from the product controller. 
+The rendering of the pug/html page can be thought as the callback function and so we can write something like this:
+
+
+//product controller - product.js
+const products = Products.fetchAll(products=>{
+	res.render('shop',{
+		prods: products,
+		pageTitle: 'shop',
+		path: '/'
+		activeShop: true
+	});
+});
+
+//product model - product.js
+
+fetchAll(cb){
+	const p = path.join(path.dirname(process.mainModule.filename),'data','products.json');
+
+	fs.readFile(p,(err, fileContent=>{
+		if(err){
+			return cb([])
+		}else{
+			return cb(JSON.parse(fileContent));
+		};
+	});
+};
+
+so since the callback cb is only called after the parsing it will only retrun when the cb is called. 
+
+Solution with async/await and promisses:
+
+//prodcut controller = products.js
+
+const products = Product.fetchAll()
+	.then(products=>{
+		res.render('shop',{
+			prods: products,
+			pageTitle: "shop",
+			path: '/'
+			activeShop: true 
+		});
+	});
+
+//product model = product.js
+const getProductsFromFile = () => {
+	return new Promise((resolve, reject) => {
+            fs.readFile(p,"utf8",(error, file) => {
+                if(error){
+                	reject(error);
+                	throw error;
+                }else if(file === ""){
+                	return resolve([]);
+                }else{
+                	return resolve(JSON.parse(file));
+                };
+            });
+        });
+};
+
+static fetchAll() {
+    return getProductsFromFile();
+};
+
+save(){
+
+	let products = [];
+
+	getProductsFromFile().then(data=>{
+		products = data;
+		products.push(this);
+		fs.writeFile(p, JSON.stringify(products),err=>{
+			if(err) throw err;
+		});
+	});
+};
+
+
+
+lets go into detail into what happens here:
+Since fetching a product from an external source should be done asynchronously, before we render the view in the controller
+we first expect a promise to get the products from the DB/file storage.
+In the model we create a helper function that returns a promise with either an empty array or the parsed json representation of the data.
+fetchAll returns that array to the controller to render.
+
+When adding a new product we have to take into account all the products we've added previously and therefor the helper function is usable here as well.
+
+!* IMPORTANT
+By default when we use fs.readFile without specifying encoding, it will return a buffer, which we will not be able to parse as JSON.
+to handle that I've specified the encoding as 'utf8' and looked if the import resulted in an empty string. 
+and if so, resolved an empty array to be worked with. 
+
+SUMMARY:
+For architectural reasons it is important to manage the application in the MVC pattern (Model,view,controller);
+The model is responsible for:
+- representing the data
+- responsible for managing the data (CRUD - create, read, update, delete)
+- contains data related logic
+
+the view is  responsible for:
+- What the user sees
+- Outside of what the user sees or how he interacts with the page, should contain minimal logic.
+
+The controller is responsible for:
+- Connecting the view with the model (bi-directional)
+- should only make sure that the two can communicate
+
+------------------------------------------------
+
+adding items to the website
+First in the views we can organize our views into admin views and shop views.
+naturally we store in each only the views that are relevant to each.
+
+An important note is that once we have done that the routes used in the controller specifying which files to render changes.
+So the following changes occur:
+
+exports.getAddProduct = (req, res, next) => {
+	res.render('admin/add-product', {
+		pageTitle: "add-product",
+		path: '/admin/add-product',
+		activeProduct: true
+	});
+};
+
+exports.getProducts = (req, res, next) => {
+
+	Product.fetchAll()
+	.then(products=>{
+		res.render('shop/product-list',{
+			prods: products,
+			pageTitle: "shop",
+			path: '/',
+			activeShop: true
+		});
+	})
+	.catch(err=>console.log('err1',err));
+};
+
+Since I am using pug, the path to the main layout changes as well.
+since we have moved the pug files into a folder than we must call the layouts will ../
+So the following changes are made
+
+extends ../layouts/main-layout.pug
+
+Now we will add new views to render:
+in admin views folder:
+add-product.pug (already exists) - link in header
+products.pug (a page to view all existing products) ?
+edit-product.pug (a page to edit the product) - link through admin products
+
+in shop views folder:
+cart.pug (the items a user wants to buy) - add link in header
+checkout.pug (the page for buying the items) - add link in header
+index.pug (the main page the user falls onto)
+product-detail.pug (the page detailing the product) - link through product
+product-list.pug (already exists) - link in header
+
+Recall how our app works:
+the page make a request through a link or through the url.
+The server.js uses ther routes specified by:
+
+...
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+...
+app.use('admin',adminroutes);
+app.use(shoproutes)
+
+then the routes specify the controller to use:
+...
+const express = require('express');
+const productController = require('../controllers/products');
+const router = express.Router();
+...
+router.get('/checkout', productController.getCheckout);
+...
+module.exports = router;
+
+Finally the controller responds to the req with a res.
+
+exports.getCheckout = (req,res,next)=>{
+	res.render('shop/checkout',{
+		pageTitle: "checkout",
+		path: '/checkout',
+		activeCheckout: true
+	});
+};
+
+A note about pug
+when we want to enterpolate a variable in the text of html we use the syntax #{varname}
+but if it is in the attributes we just use the variable without #{...} surrounding it.
+
+Adding id to a model.
+As before, the part of the application that deals with managing of classes and interaction with DB is the models element of MVC.
+There are two ways to assign an id. The first is by having the db auto increment a field. But there are security considerations that make it less favourable.
+The other alternative is to use the node built in crypto library:
+
+Const crypto = require('crypto');
+
+we can use this library to add an id when we save a new element by:
+this.id = crypto.randomBytes(8).toString('hex');
+This returns a 16 character string from hexadecimal system.
+
+The problem here is id collision.
+This can be solved by checking if that id exists already in DB. Or adding a prefix to narrow searching. Ultimately at least one model in the database will not have it. An idea is to try and have a root(table) that has the smallest amount of rows in it. We can that use that as a prefix and search over a smaller amount of entries. 
+
+Dynamic routes:
+Node has the ability to serve dynamic(optional) routes.
+In product-list.pug we can add a button that navigates to a more detailed page of the product. But every product is different and therefor we will use the product id to specify what information to fetch from the data.
+
+Using pug we can declare an attribute with a specific product id in the following manner:
+a.btn(href="/products/" + product.id).
+
+Recall that before loading the products we have
+Each product in prods
+Where prods is a passed array of objects that we return from the server.
+
+In our shopRoutes folder we can declare a route with an optional parameter this way:
+router.verb('/products/:productId',shopController.getProductDetail)
+
+Notice that the order here matters. 
+So if we have another route like:
+router.verb('/products/delete)
+as long as the verb is the same, the router will return the first route that makes sense.
+To avoid route collision, think about API design.
+
+So if we have a dynamic segment and a specific route, always have the specific route read before the dynamic segment. 
+
+In the controller, in order to read the optional param we can do the following:
+exports.getProductDetail = (req, res, next) =>{
+	const productId = req.params.productId;
+	...
+}
+
+Sending parameters to server without changing url:
+Often just want to send information in the request body without requesting a url.
+When we declare a form with  an action="/route" we automatically change the url to that action on submit. 
+A way to avoid automatically changing the url is by having a hidden input.
+
+Note about templating with pug.
+There are two concepts to take into account:
+Inheritance, mixings.
+
+With inheritance we extend an existing layout with named blocks.
+With mixins we include html blocks in pug templates.
+
+We can think about that in the way that they provide the same service but in opposite directions. 
+
+Suppose we have:
+layout:
+...
+	block insertContent
+
+Mixin:
+mixinFunction(optional params)
+	...
+
+Template:
+Extends /pathToLayout.pug
+Includes /pathToMixin.pug
+
+Block insertContent
+	...some content
+	+mixinFunction
+
+Note that for including a mixin function we use the + sign
+Note that a mixin can have or not have parameters, If there are it will be passed in parentheses, Otherwise no parentheses. 
+
+//getting optional parameters
+In this tutorial, so far, we have used two http verbs get and post.
+When we pass a post request we can get the parameters in the body of the post.
+But when we pass a get request we pass the optional parameters in the query object
+
+So a get request will look something like this:
+www.url.com/route?key1="value1"&key2="value2"
+
+In our routing we can specify optional routes with a colon:
+router.getPath = ('/path:optionalParam',controller.getpath)
+
+In our controller we then write:
+Exports.getPath = (req, res, next)=>{
+	const optionalParam = req.params.optionalParam;
+	const value1 = req.query.key1;
+	const value2 = req.query.key2;
+	...
+};
+
+In summary when retrieving information from a get/post request we:
+If post we use req.body.key
+for optional routes we use req.params.key
+For get we use req.query.key
+
+req.body passes the path after the url
+req.query passes the optional parameters
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

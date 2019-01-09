@@ -33,7 +33,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req,res,next)=>{
 	User.findByPk('b2a16684')
 	.then(user=>{
-		console.log(chalk.green('heello'));
 		req.user = user;
 		next();
 	})

@@ -1,0 +1,80 @@
+Npm:
+
+NPM stands for Node Package manager. It follows a JSON format and lets Node know how to work with 3rd party packages as well as lets us define script to run.
+We can instantiate a new Node project with (in terminal):
+NPM init.
+
+In the Script section we can define commands for node to execute. we do so by giving a name to the command to execute and a file to execute from.
+Start is one of the reserved keywords for commands but nontheless we can start an entry point for our app from there.
+"Start": node server.js,
+That way whenever were in the location of the npm package we can simply write in the console npm start and it would be equivalent to writing node server.js.
+** when naming scripts do not use blank spaces.
+** to run custom scripts we do have to use the keyward run: npm run custom_script_name.
+
+Npm also allows to install and integrate 3rd party packages. 3rd party packages are useful because they allow to shorten dev time and there are thousends of helpful packages on the npm repository. 
+
+An example would be, that whenever we change a file, we have to restart the server. Nodemon is a package that can help us by restarting the server automatically. 
+
+npm install nodemon --save-dev
+
+We can use flags to identify what part of the process we want the package to be used for. Since we only change code in development we don't need the Nodemon package in production and so the --save-dev flag specifies that this should only be compiled in development mode. 
+the --save flag with save it to the production dependency tree. 
+
+When installing a package a couple of things will be installed: 
+- Node_Modules (folder) - contains all the packages that are in use in the project or by other packages.
+- The package.json file will be updated to reflect new packages installed for the project.
+- Package-lock.json file will be generated to keep track of the versions of packages in use so there is no conflict if a package is using differnt versions of the another 3rd party package.
+
+So there are three types of content:
+core code which is the language in which we write.
+core modules which are the modules that Node is shipped with that we don't need to install
+3rd party modules which are modules written by other poeple that we would like to integrate into our process to save time (or because others may be better at writing certain code that we are).
+
+Another comment us that after we have installed nodemon we need to run our file with it, so we needed to change the "Start" script to:
+nodemon server.js. 
+We can do that only through Node, since the package was installed locally.
+Any package that we would like to install globally we can use thhe -g flag when installing it. 
+
+Errors:
+
+There are three types of errors we can encounter - 
+Syntax: typos, not closing brackets properly, those will cause the code not to be compiled. (compilation time error)
+Runtime errors: errors that would cause the program to stall/crash but only when it runs. 
+Logical error: most difficult errors to locate since it requires our own work to identify where they can take place and handle them.
+
+Fixing and finding syntax error:
+
+When a compilation time error is thrown, the. compilation stops and the terminal displays a stack representing where is the error coming from.
+
+.../Study/JavaScript/Node/workdflow_debugging/server.js:6
+cons server = http.createServer(routes.handler);
+     ^^^^^^
+
+SyntaxError: Unexpected identifier
+    at new Script (vm.js:83:7)
+    at createScript (vm.js:267:10)
+    at Object.runInThisContext (vm.js:319:10)
+    at Module._compile (internal/modules/cjs/loader.js:685:28)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:733:10)
+    at Module.load (internal/modules/cjs/loader.js:620:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:560:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:552:3)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:775:12)
+    at startup (internal/bootstrap/node.js:300:19)
+[nodemon] app crashed - waiting for file changes before starting...
+
+Notice that it shows on which line the error has occured: 
+.../Study/JavaScript/Node/workdflow_debugging/server.js:6
+
+Fixing and finding runtime error:
+Unlike the Sytax error, runtime errors will not prevent compilations and initial load will likely to be executed. However, when the error is encounterd the page would crash. the stack trace can tell us a bit about the problem and where it is encounterd, it does require. reading it though.
+
+Fixing and finding logical error:
+As mentioned before this will be the most difficult error to fix because it would not through an error unless we define that there is an error there. 
+
+
+
+
+
+
+
