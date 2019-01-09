@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-
+const gen_id = require('../util/id_generator.js');
 const Product = require('../models/product.js');
 const Cart = require('../models/cart.js');
 
@@ -77,12 +77,41 @@ exports.postAddToCart = (req, res, next) => {
     const itemToAdd = req.body.productId;
     const itemPrice = req.body.productPrice;
 
-    Cart.addItemToCart(itemToAdd, itemPrice)
-        .then(msg => {
-            console.log(msg);
-            return res.redirect('/home');
+    let fetchedCart;
+
+    req.user.getCart()
+    .then(cart=>{
+        fetchedCart = cart;
+        return cart.getProducts({
+            where: {id: itemToAdd}
         })
-        .catch(err => {
-            console.log(err);
-        });
+    })
+    .then(products=>{
+        let product;
+        if(products.length > 0){
+           product = products[0];
+        }
+        let newQuantity = 1;
+        if(product){
+            //...
+        }else{
+            return Product.findByPk(itemToAdd)
+            .then(product=>{
+                return fetchedCart.addProduct(product,{
+                    through: {
+                        id: gen_id.generate_hex_id(),
+                        quantity: newQuantity
+                    }
+                })
+            })
+            .catch(err=>{
+                console.log(chalk.red(err));
+            });
+        }
+
+    })
+
+    .catch(err=>{
+        console.log(chalk.red(err));
+    })
 };
