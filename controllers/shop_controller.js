@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const util = require('util');
 const gen_id = require('../util/id_generator.js');
 const Product = require('../models/product.js');
 const Cart = require('../models/cart.js');
@@ -45,6 +46,7 @@ exports.getCart = (req, res, next) => {
         return cart.getProducts();
     })
     .then(products=>{
+        console.log(util.inspect(chalk.green(products)));
         res.render('shop/cart',{
             pageTitle: Cart,
             prods: products,
@@ -110,7 +112,9 @@ exports.postAddToCart = (req, res, next) => {
         }
 
     })
-
+    .then(()=>{
+        res.redirect('/');
+    })
     .catch(err=>{
         console.log(chalk.red(err));
     })
