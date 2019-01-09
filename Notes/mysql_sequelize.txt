@@ -64,3 +64,117 @@ const Product = db.define('product', {
 })
 
 module.exports = Product;
+
+
+Creating a dummy user:
+In the server file we will need to do a couple of things, sync the database using:
+db.sync();
+
+*note that if we want to rewrite the db we should use:
+db.sync({
+    force: true
+});
+
+once the db is synced we should find a user using the findByPk(<user_id>) method.
+If it doesn't exist we can:
+
+return  User.create({
+        id: id_gen.generate_hex_id(),
+        name: "dummy_user",
+        email: "dummy-email@gmail.com"
+})
+
+into the then() function.
+and once that is incvoked we can attach the dummy user into the req object
+To use it we can temporarily create a middleware that attaches the dummy user to the req object.
+
+app.use((req,res,next)=>{
+    req.user = user;
+    next();
+})
+
+2 important notes here are: 
+that the middleware has to be written before the routes (otherwise it will not get executed).
+we have to use the next() function so it moves on to the next middleware.
+
+On associations:
+Associations are the relationship definition between tables. rows in tables can have a:
+1:1 one to one relation 
+1:n one to many relation
+n:m many to many relation
+
+note that those relations are symmetrical, If table a has a 1:n relation with table b then 
+table b has a n:1 relation with table a.
+With sequelize we can define those relations in any direction we so choose.
+
+so for instance, a user can only have 1 cart so the relation would be:
+User.hasOne(Cart);
+or
+Cart.hasOne(User);
+
+a user can create a lot of products so:
+Product.belongsTo(User,{
+    constraints: true,
+    onDelete: 'CASCADE'
+    // foreignKey: {
+    //  allowNull: false
+    // }
+});
+or
+User.hasMany(Products)
+
+A special consideration must be given to many to many type of relationships:
+if we have such a relationship between 2 tables then an intermediary table has to be constructed.
+That table will hold the associations and might have other fields (like id).
+
+So for instance, a product can be part of many carts, and each cart can store many products.
+The intermediary table we can create can be called cart-item for example, and will follow the schema:
+
+const CartItem = db.define('cartItem',{
+    id: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        unique: true,
+        allowNull: false
+    },
+    quantity: {
+        type: Sequelize.INTEGER
+    }
+});
+
+
+*notice that every entry will have an id and a quantity regrdless of what else we store in there.
+
+When setting the association between the cart and product schema we can define it as:
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
+
+where the through key identifies the schema of the intermediary table. That way when a row is added it will have at least the following columns
+id, quantity, cartId, productId.
+
+Sequelize magic methods:
+When we return values from the db using sequlize, what we get is is a sequelize object, Which has properties and methods we didn't have to define. 
+So for instance, once we define an association between a user and products we can call 
+user.getProducts() method
+or
+cart.getProducts()
+or 
+products.getCarts()
+
+The kind of methods that are added depend on the assiciation that is defined.
+So if we define Products.belongsTo(user)
+we can use the user object to create product by:
+user.createProduct({
+    ...product parameters...
+})
+
+similerly if a Cart.hasMany(Product)
+then we can invoke the cart.addProduct(product,{
+    through: {
+        ... additional parameters for CartItem schema.... 
+    }
+})
+
+note that the through key is the row in the intermediary table. 
+
+
