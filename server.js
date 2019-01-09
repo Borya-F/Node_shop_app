@@ -5,7 +5,7 @@ const path = require('path');
 const shopRoutes = require('./routes/shop_routes.js');
 const adminRoutes = require('./routes/admin_routes.js');
 const sharedController = require('./controllers/sharedController.js');
-const sequelize = require('./util/database.js');
+const db = require('./util/database.js');
 const Product = require('./models/product.js');
 const User = require('./models/user.js');
 const id_gen = require('./util/id_generator.js');
@@ -29,27 +29,30 @@ app.use(bodyParser.urlencoded({
 //path to static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+app.use((req,res,next)=>{
+	User.findByPk('b2a16684')
+	.then(user=>{
+		console.log(chalk.green('heello'));
+		req.user = user;
+		next();
+	})
+	.catch(err=>{
+		console.log(err);
+	});
+});
+
+
+
 //Routes
 app.use(shopRoutes);
 app.use('/admin',adminRoutes);
 
 app.use(sharedController.get404);
 
-//User Middleware
-// app.use((req,res,next)=>{
-// 	User.findByPk('b2a16684')
-// 	.then(user=>{
-// 		console.log(chalk.yellow(user.id));
-// 		req.user = user;
-// 		next();
-// 	})
-// 	.catch(err=>console.log(err));
-// })
-// 
-app.use((req,res,next)=>{
-	console.log(chalk.green('this is  NOTTTTTTTT working'));
-	next();
-});
+
+
+
 
 Product.belongsTo(User,{
 	constraints: true,
@@ -62,7 +65,7 @@ Product.belongsTo(User,{
 User.hasMany(Product);
 
 
-sequelize.sync()
+db.sync()
 .then(result=>{
 	return User.findByPk('b2a16684');
 })
