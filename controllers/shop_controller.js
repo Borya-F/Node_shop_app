@@ -13,7 +13,7 @@ exports.getHome = (req, res, next) => {
     })
     .then(products=>{
         res.render('shop/shop',{
-            acticeNav: "home",
+            activeNav: "home",
             pageTitle: "shop",
             prods: products
         });
@@ -133,3 +133,18 @@ exports.postAddToCart = (req, res, next) => {
         console.log(chalk.red(err));
     })
 };
+
+exports.getOrder = (req,res,next) =>{
+    res.render('shop/orders',{
+        pageTitle: 'orders',
+        activeNav: 'orders'
+    })
+};
+
+exports.postAddToOrder = (req,res,next)=>{
+    console.log('post to order clicked');
+    
+};
+
+
+

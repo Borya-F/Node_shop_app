@@ -13,5 +13,9 @@ block content
 					form(action='/cartDeleteItem', method="POST")
 						input(type="hidden", value=prod.id, name="prodId")
 						button.btn(type="submit") remove from Cart
+		hr
+		div.centered
+			form(action='/orders', method="POST")
+				button.btn(type="submit") add to order
 	else
 		p no products currently in cart

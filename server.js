@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //setting up mock user
 app.use((req,res,next)=>{
-	User.findByPk('aa44d07b268c64da')
+	User.findByPk('f298ac0c')
 	.then(user=>{
 		req.user = user;
 		next();
@@ -73,8 +73,9 @@ Product.belongsTo(User,{
 
 User.hasMany(Product); //optional
 User.hasOne(Cart);
-User.hasOne(Order);
 Cart.belongsTo(User); //optional
+User.hasMany(Order);
+Order.belongsTo(User);
 
 //many to many - creates an intermediary table Cart:Product
 Cart.belongsToMany(Product, {through: CartItem});
@@ -88,7 +89,7 @@ Product.belongsToMany(Order,{through: OrderItem});
 // db.sync({force:true})	//use when schema
 db.sync()					//use when no schema changes
 .then(result=>{
-	return User.findByPk('aa44d07b268c64da');
+	return User.findByPk('f298ac0c');
 })
 .then(user=>{
 	if(!user){
@@ -101,23 +102,22 @@ db.sync()					//use when no schema changes
 		return user;
 	}
 })
-.then(user=>{
+.then(fetchedUser=>{
 
-	let getCart = user.getCart();
-	let getOrder = user.getOrder();
-	let getUser = Promise.resolve(user);
+	let cart = fetchedUser.getCart();
+	let user = Promise.resolve(fetchedUser);
 
-
-	// return createCart;
-	return Promise.all([getCart,getOrder,getUser]);
+	return Promise.all([user,cart]);
 })
-.then(values => {
+.then( values => {
 
-	let cart = values[0];
-	let order = values[1];
-	let user = values[2];
+	let user = values[0];
+	let cart = values[1];
 
-	let createCart, createOrder;
+	console.log(chalk.green(user,cart));
+	
+
+	let createCart;
 
 	if(cart === null){
 		createCart = user.createCart({
@@ -127,15 +127,7 @@ db.sync()					//use when no schema changes
 		createCart = Promise.resolve('successfully found existing cart');
 	}
 
-	if(order === null){
-		createOrder = user.createOrder({
-			id: id_gen.generate_hex_id()
-		});
-	}else{
-		createOrder = Promise.resolve('successfully found existing Order');
-	}
-
-	Promise.all([createCart,createOrder]);
+	return (createCart);
 })
 .then(values=>{
 	console.log(chalk.yellow('Server is running on port 3000'));
