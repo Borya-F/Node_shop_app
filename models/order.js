@@ -9,8 +9,7 @@ const Order = db.define('order',{
 		allowNull: false
 	},
 	userId: {
-      type: Sequelize.STRING,
-      unique: true
+      type: Sequelize.STRING
   	}
 });
 

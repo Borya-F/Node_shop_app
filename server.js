@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //setting up mock user
 app.use((req,res,next)=>{
-	User.findByPk('f298ac0c')
+	User.findByPk('dabe1d6297d74f5eed502afae7')
 	.then(user=>{
 		req.user = user;
 		next();
@@ -89,7 +89,7 @@ Product.belongsToMany(Order,{through: OrderItem});
 // db.sync({force:true})	//use when schema
 db.sync()					//use when no schema changes
 .then(result=>{
-	return User.findByPk('f298ac0c');
+	return User.findByPk('dabe1d6297d74f5eed502afae7');
 })
 .then(user=>{
 	if(!user){
@@ -113,9 +113,6 @@ db.sync()					//use when no schema changes
 
 	let user = values[0];
 	let cart = values[1];
-
-	console.log(chalk.green(user,cart));
-	
 
 	let createCart;
 
