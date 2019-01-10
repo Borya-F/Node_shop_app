@@ -46,9 +46,8 @@ exports.getCart = (req, res, next) => {
         return cart.getProducts();
     })
     .then(products=>{
-        console.log(util.inspect(chalk.green(products)));
         res.render('shop/cart',{
-            pageTitle: Cart,
+            pageTitle: 'Cart',
             prods: products,
             activeNav: 'cart'
         })
@@ -61,14 +60,25 @@ exports.getCart = (req, res, next) => {
 exports.postCartDelItem = (req, res, next) => {
 
     const itemId = req.body.prodId;
-    const itemPrice = req.body.prodPrice;
+    
+    let fetchedCart;
 
-    Cart.removeProductFromCart(itemId,itemPrice)
-    .then(msg=>{
-    	res.redirect('/cart');
+    req.user.getCart()
+    .then(cart=>{
+        fetchedCart = cart;
+        return fetchedCart.getProducts({
+            where:{id: itemId}
+        });
+    })
+    .then(products=>{
+        let product = products[0];
+        return product.cartItem.destroy();
+    })
+    .then(()=>{
+        res.redirect('/cart');
     })
     .catch(err=>{
-    	console.log(err);
+        console.log(chalk.red(err));
     })
 
 
@@ -76,8 +86,8 @@ exports.postCartDelItem = (req, res, next) => {
 }
 
 exports.postAddToCart = (req, res, next) => {
+
     const itemToAdd = req.body.productId;
-    const itemPrice = req.body.productPrice;
 
     let fetchedCart;
 
@@ -95,7 +105,11 @@ exports.postAddToCart = (req, res, next) => {
         }
         let newQuantity = 1;
         if(product){
-            //...
+            let oldQty = product.cartItem.quantity;
+            newQuantity = ++oldQty;
+            return fetchedCart.addProduct(product,{
+                through: {quantity: newQuantity}
+            });
         }else{
             return Product.findByPk(itemToAdd)
             .then(product=>{
