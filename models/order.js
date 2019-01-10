@@ -8,10 +8,10 @@ const Order = db.define('order',{
 		unique: true,
 		allowNull: false
 	},
-	quantity: {
-		type: Sequelize.INTEGER
-	}
-  }
+	userId: {
+      type: Sequelize.STRING,
+      unique: true
+  	}
 });
 
 module.exports = Order;

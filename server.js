@@ -22,6 +22,8 @@ const Product = require('./models/product.js');
 const User = require('./models/user.js');
 const Cart = require('./models/cart.js');
 const CartItem = require('./models/cart-item.js');
+const Order = require('./models/order.js');
+const OrderItem = require('./models/order-item.js');
 
 
 // parameters
@@ -44,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //setting up mock user
 app.use((req,res,next)=>{
-	User.findByPk('4672478d')
+	User.findByPk('aa44d07b268c64da')
 	.then(user=>{
 		req.user = user;
 		next();
@@ -71,17 +73,22 @@ Product.belongsTo(User,{
 
 User.hasMany(Product); //optional
 User.hasOne(Cart);
+User.hasOne(Order);
 Cart.belongsTo(User); //optional
 
 //many to many - creates an intermediary table Cart:Product
 Cart.belongsToMany(Product, {through: CartItem});
 Product.belongsToMany(Cart, {through: CartItem});
 
+//many to many - creates an intermediary table Order:Product
+Order.belongsToMany(Product,{through: OrderItem});
+Product.belongsToMany(Order,{through: OrderItem});
+
 
 // db.sync({force:true})	//use when schema
 db.sync()					//use when no schema changes
 .then(result=>{
-	return User.findByPk('4672478d');
+	return User.findByPk('aa44d07b268c64da');
 })
 .then(user=>{
 	if(!user){
@@ -95,11 +102,42 @@ db.sync()					//use when no schema changes
 	}
 })
 .then(user=>{
-	return user.createCart({
-		id: id_gen.generate_hex_id()
-	})
+
+	let getCart = user.getCart();
+	let getOrder = user.getOrder();
+	let getUser = Promise.resolve(user);
+
+
+	// return createCart;
+	return Promise.all([getCart,getOrder,getUser]);
 })
-.then(cart=>{
+.then(values => {
+
+	let cart = values[0];
+	let order = values[1];
+	let user = values[2];
+
+	let createCart, createOrder;
+
+	if(cart === null){
+		createCart = user.createCart({
+			id: id_gen.generate_hex_id()
+		})
+	}else{
+		createCart = Promise.resolve('successfully found existing cart');
+	}
+
+	if(order === null){
+		createOrder = user.createOrder({
+			id: id_gen.generate_hex_id()
+		});
+	}else{
+		createOrder = Promise.resolve('successfully found existing Order');
+	}
+
+	Promise.all([createCart,createOrder]);
+})
+.then(values=>{
 	console.log(chalk.yellow('Server is running on port 3000'));
 	app.listen(dev_port);
 })
