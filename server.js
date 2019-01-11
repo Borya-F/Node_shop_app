@@ -7,14 +7,14 @@ const path = require('path');
 const chalk = require('chalk');
 
 //db connection
-const db_connection = require('./util/database.js');
+const db = require('./util/database.js');
 
 //helper functions
 const id_gen = require('./util/id_generator.js');
 
 //routes/controllers
 // const shopRoutes = require('./routes/shop_routes.js');
-// const adminRoutes = require('./routes/admin_routes.js');
+const adminRoutes = require('./routes/admin_routes.js');
 // const sharedController = require('./controllers/sharedController.js');
 
 
@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes instantiation
 // app.use(shopRoutes);
-// app.use('/admin',adminRoutes);
+app.use('/admin',adminRoutes);
 // app.use(sharedController.get404);
 
 
@@ -51,10 +51,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 	app.listen(dev_port);
 // })
 
-db_connection()
+db.mongoConnect()
 .then(client=>{
-	console.log(chalk.green('client is awnnn'));
-	client.close();
+
+	// console.log(chalk.green(client));
+	app.listen(dev_port);
+	
+	// client.close();
 })
 .catch(err=>{
 	console.log(chalk.red(err));
