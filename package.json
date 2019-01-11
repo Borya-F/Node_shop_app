@@ -9,6 +9,10 @@
   },
   "author": "borya fishman",
   "license": "ISC",
+  "repository": {
+  "type" : "git",
+  "url" : "https://github.com/Borya-F/Node_shop_app"
+  },
   "nodemonConfig": {
     "ignore": "data/*",
     "verbose": true
