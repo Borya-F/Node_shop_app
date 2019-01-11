@@ -10,11 +10,11 @@ router.get('/home', shopController.getHome);
 router.get('/index', shopController.getHome);
 router.get('/products',shopController.getHome);
 router.get('/products/:id',shopController.getProductDetail);
-router.get('/cart',shopController.getCart);
-router.post('/cart', shopController.postAddToCart);
-router.post('/cartDeleteItem',shopController.postCartDelItem);
-router.get('/orders',shopController.getOrder);
-router.post('/orders',shopController.postAddToOrder);
+// router.get('/cart',shopController.getCart);
+// router.post('/cart', shopController.postAddToCart);
+// router.post('/cartDeleteItem',shopController.postCartDelItem);
+// router.get('/orders',shopController.getOrder);
+// router.post('/orders',shopController.postAddToOrder);
 
 
 

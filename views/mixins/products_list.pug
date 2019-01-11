@@ -15,13 +15,13 @@ mixin product_list(products, admin=false)
 						p.product__description #{product.desc}
 					if admin
 						.card__actions
-							a.btn(href="/admin/edit-product/" + product.id) edit
-							form(action="/admin/delete-product/" + product.id, method="POST")
+							a.btn(href="/admin/edit-product/" + product._id) edit 
+							form(action="/admin/delete-product/" + product._id, method="POST")
 								button.btn(type="submit") delete
 					else
 						.card__actions
-							a.btn(href='/products/' + product.id) view detail
-							+addToCartForm(product.id,product.price)
+							a.btn(href='/products/' + product._id) view detail
+							+addToCartForm(product._id)
 							
 	else
 		p2 no products present 

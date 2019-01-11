@@ -10,12 +10,12 @@ const chalk = require('chalk');
 const db = require('./util/database.js');
 
 //helper functions
-const id_gen = require('./util/id_generator.js');
+const msg = require('./util/messagelog.js');
 
 //routes/controllers
-// const shopRoutes = require('./routes/shop_routes.js');
+const shopRoutes = require('./routes/shop_routes.js');
 const adminRoutes = require('./routes/admin_routes.js');
-// const sharedController = require('./controllers/sharedController.js');
+const sharedController = require('./controllers/sharedController.js');
 
 
 // parameters
@@ -39,9 +39,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 //Routes instantiation
-// app.use(shopRoutes);
+app.use(shopRoutes);
 app.use('/admin',adminRoutes);
-// app.use(sharedController.get404);
+app.use(sharedController.get404);
 
 
 // db()

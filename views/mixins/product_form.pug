@@ -1,6 +1,6 @@
 mixin productForm(product,edit=false)
 
-	form.product-form(action=(edit ? "/admin/edit-product/" + product.id : "/admin/add-product"), method="POST")
+	form.product-form(action=(edit ? "/admin/edit-product/" + product._id : "/admin/add-product"), method="POST")
 		.form-control
 			label(for="title") Title
 			input#title(type="text", name="title", value=(product ? product.title : ''))

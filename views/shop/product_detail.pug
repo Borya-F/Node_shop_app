@@ -11,7 +11,7 @@ block content
 			h2 price: $ #{product.price}
 			p #{product.desc}
 
-			+addToCartForm(product.id,product.price)
+			+addToCartForm(product._id)
 			
 	else
 		h1 product not found
