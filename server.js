@@ -57,8 +57,6 @@ app.use((req, res, next) => {
         });
 })
 
-
-
 //Routes instantiation
 app.use(shopRoutes);
 app.use('/admin', adminRoutes);
@@ -70,7 +68,7 @@ db.mongoConnect()
     .then(client => {
 
         app.listen(dev_port);
-        msg.status(`server is listening on port ${dev_port}`,'server');
+        msg.status(`server is listening on port ${dev_port}`, 'server');
         // client.close();
     })
     .catch(err => {
