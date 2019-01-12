@@ -23,6 +23,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getAddProduct = (req, res, next) => {
 
+
     res.render('admin/edit_product', {
         pageTitle: "add-product",
         activeNav: 'add-product'
@@ -32,7 +33,6 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
 
     const userId = req.user._id;
-    msg.status(userId);
     const title = req.body.title;
     const price = req.body.price;
     const desc = req.body.desc;
