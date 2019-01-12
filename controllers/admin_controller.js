@@ -31,13 +31,15 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 
+    const userId = req.user._id;
+    msg.status(userId);
     const title = req.body.title;
     const price = req.body.price;
     const desc = req.body.desc;
     let imgUrl = req.body.imgURL;
 
     try {
-    	const prod = new Product(title,price,desc,imgUrl= "https://picsum.photos/150/150/?random");
+    	const prod = new Product(userId,title,+price,desc,imgUrl= "https://picsum.photos/150/150/?random");
 	    prod.save()
 	    .then(result=>{
 	    	msg.success('new product added',code_loc);

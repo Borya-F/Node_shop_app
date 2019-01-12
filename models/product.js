@@ -3,7 +3,8 @@ const getDB = require('../util/database.js').getDB;
 const ObjectId = require('mongodb').ObjectID;
 
 class Product {
-    constructor(title,price,desc,imgUrl){
+    constructor(userId,title,price,desc,imgUrl){
+        this.userId = ObjectId(userId);
         this.title = title;
         this.price = price;
         this.desc = desc;
@@ -45,9 +46,9 @@ class Product {
         return new Promise((resolve,reject)=>{
             getDB()
             .then(db=>{
-                return db.collection('products').find({
+                return db.collection('products').findOne({
                     "_id": ObjectId(id)
-                }).next();
+                });
             })
             .then(fetchedProd=>{
                 resolve(fetchedProd);
@@ -86,7 +87,7 @@ class Product {
                         "title": updatedProduct.title,
                         "price": updatedProduct.price,
                         "desc": updatedProduct.desc,
-                        "imgURl": updatedProduct.imgUrl
+                        "imgURL": updatedProduct.imgUrl
                     }
                 });
             })

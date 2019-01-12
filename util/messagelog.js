@@ -12,3 +12,7 @@ exports.success = (message,source = '')=>{
 	console.log(chalk.green(`[${source}] ${message}`));
 };
 
+exports.test = (message,source = '')=>{
+	console.log(chalk.magenta(`[${source}] ${message}`));
+}
+
