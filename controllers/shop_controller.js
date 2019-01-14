@@ -41,7 +41,6 @@ exports.getCart = (req, res, next) => {
 
     req.user.getCart()
     .then(cartItems=>{
-        msg.test(cartItems)
         res.render('shop/cart',{
             pageTitle: 'cart',
             activeNav: 'cart',
@@ -83,7 +82,7 @@ exports.postAddToCart = (req, res, next) => {
 
     req.user.addToCart(itemToAddId)
     .then(result=>{
-        msg.success(result,'admin_controller.js');
+        msg.success(result,'shop_cntrl');
     })
     .catch(err=>{
         msg.err(err);

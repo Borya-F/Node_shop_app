@@ -49,7 +49,6 @@ app.use((req, res, next) => {
             } else {
                 msg.success(`user found -> attaching to req with id: ${fetchedUser._id}`, 'server');
                 req.user = new User(fetchedUser.name,fetchedUser.email,fetchedUser.cart,fetchedUser._id);
-                msg.status(req.user,'test user');
             }
 
             next();
