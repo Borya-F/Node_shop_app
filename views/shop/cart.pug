@@ -9,7 +9,7 @@ block content
 			each prod in prods
 				li.cart__item
 					h1 product: #{prod.title} 
-					h2 quantity: #{prod.cartItem.quantity}
+					h2 quantity: #{prod.qty}
 					form(action='/cartDeleteItem', method="POST")
 						input(type="hidden", value=prod._id, name="prodId")
 						button.btn(type="submit") remove from Cart

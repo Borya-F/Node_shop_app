@@ -3,7 +3,7 @@ const ObjectId = require('mongodb').ObjectID;
 const msg = require('../util/messagelog.js');
 
 class User{
-	constructor(username,email,cart = {items:[]},id=null){
+	constructor(username,email,cart,id=null){
 		this.name = username;
 		this.email = email;
 		this.cart = cart;
@@ -30,10 +30,29 @@ class User{
 		});
 	};
 
-	addToCart(prod){
+	addToCart(prodId){
 		return new Promise((resolve,reject)=>{
-			
-			const updatedCart = {items:[{...prod, qty: 1}]}	
+
+			const cartItemIndex = this.cart.items.findIndex(item=>{
+				return item.product.toString() === prodId;
+			});
+
+			let newQuantity = 1;
+			const updatedCartItems = [...this.cart.items];
+
+			if(cartItemIndex >= 0){
+				newQuantity = ++updatedCartItems[cartItemIndex].qty;
+			}else{
+				updatedCartItems.push({
+					product: ObjectId(prodId),
+					qty: newQuantity
+				});
+			};
+
+			const updatedCart = {
+				items: updatedCartItems
+			};
+
 			getDB()
 			.then(db=>{
 				return db.collection('users').updateOne({
@@ -51,6 +70,34 @@ class User{
 				reject(err);
 			})
 			
+		});
+	};
+
+	getCart(){
+		return new Promise((resolve,reject)=>{
+			const prodIds = this.cart.items.map(item=> item.product);
+
+
+			getDB()
+			.then(db=>{
+				return db.collection('products').find({
+					"_id": {$in: prodIds}
+				}).toArray();
+			})
+			.then(products=>{
+				return products.map(prod=>{
+					return {...prod,
+						qty: this.cart.items.find(item=>{
+							return item.product.toString() === prod._id.toString();
+						}).qty}
+				})
+			})
+			.then(protoProds=>{
+				resolve(protoProds);
+			})
+			.catch(err=>{
+				reject(err);
+			});
 		});
 	};
 
