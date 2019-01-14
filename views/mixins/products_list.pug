@@ -21,7 +21,7 @@ mixin product_list(products, admin=false)
 					else
 						.card__actions
 							a.btn(href='/products/' + product._id) view detail
-							+addToCartForm(product._id)
+							+addToCartForm(product)
 							
 	else
 		p2 no products present 

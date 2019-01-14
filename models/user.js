@@ -3,9 +3,16 @@ const ObjectId = require('mongodb').ObjectID;
 const msg = require('../util/messagelog.js');
 
 class User{
-	constructor(username,email){
+	constructor(username,email,cart = {items:[]},id=null){
 		this.name = username;
 		this.email = email;
+		this.cart = cart;
+
+		if(id === null){
+			this._id = new ObjectId();
+		}else{
+			this._id = id;
+		}
 	};
 
 	save(){
@@ -20,6 +27,30 @@ class User{
 			.catch(err=>{
 				reject(err);
 			});
+		});
+	};
+
+	addToCart(prod){
+		return new Promise((resolve,reject)=>{
+			
+			const updatedCart = {items:[{...prod, qty: 1}]}	
+			getDB()
+			.then(db=>{
+				return db.collection('users').updateOne({
+					"_id": ObjectId(this._id)
+				},{
+					$set: {
+						cart: updatedCart
+					}
+				})
+			})
+			.then(result=>{
+				resolve('successfully added item to cart');
+			})
+			.catch(err=>{
+				reject(err);
+			})
+			
 		});
 	};
 

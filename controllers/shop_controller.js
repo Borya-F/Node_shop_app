@@ -1,4 +1,5 @@
 const Product = require('../models/product.js');
+const User = require('../models/user.js');
 const msg = require('../util/messagelog.js');
  
 
@@ -75,13 +76,29 @@ exports.getProductDetail = (req, res, next) => {
 //     })
 //     .catch(err=>{
 //         console.log(chalk.red(err));
-//     })
-
-
-    
+//     })    
 // }
 
-// exports.postAddToCart = (req, res, next) => {
+exports.postAddToCart = (req, res, next) => {
+    const itemToAdd = req.body.product;
+
+    msg.status(`item to add ${itemToAdd}`);
+
+    // User.fetchUserById(req.user._id)
+    // .then(user=>{
+    //     msg.test(typeof user);
+    //     return user.addToCart(itemToAdd_id);
+    // })
+    // .then(result=>{
+    //     msg.success(result);
+    // })
+    // .catch(err=>{
+    //     msg.err(err);
+    // })
+
+
+    res.redirect('/home');
+}
 
 //     const itemToAdd = req.body.productId;
 

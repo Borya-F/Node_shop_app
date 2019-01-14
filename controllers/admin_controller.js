@@ -1,5 +1,4 @@
 const Product = require('../models/product.js');
-const Cart = require('../models/cart.js');
 const msg = require('../util/messagelog.js');
 
 //logging
