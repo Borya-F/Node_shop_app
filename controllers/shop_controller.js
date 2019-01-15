@@ -85,17 +85,15 @@ exports.getOrder = (req,res,next) => {
 
     req.user.getOrders()
     .then(orders=>{
-        msg.test(orders,'shop_control');
         res.render('shop/orders',{
             pageTitle: 'ordersPage',
-            activeNav: 'orders'
-            // orders: orders
+            activeNav: 'orders',
+            orders: orders
         })
     })
     .catch(err=>{
         msg.err(err,'shop_cntrl');
     })
-    
 };
 
 exports.postAddToOrder = (req,res,next)=>{
@@ -103,7 +101,7 @@ exports.postAddToOrder = (req,res,next)=>{
     req.user.addOrder()
     .then(result=>{
         msg.status(result,'shop_cntrl');
-        res.end();
+        res.redirect('/orders');
     })
     .catch(err=>{
         msg.err(err,'shop_cntrl');

@@ -193,11 +193,6 @@ class User {
     getOrders() {
     	return new Promise((resolve,reject)=>{
 
-    		//get an array of orders
-    		//orders.items is an array of objects containing productid and qty.
-    		//get an array of the unique products in the items
-
-
 
     		getDB()
     		.then(db=>{

@@ -1,17 +1,15 @@
 extends ../layouts/main_layout.pug
 
-
 block content
-	h1 orders page
-	//- if orders.length <= 0
-	//- 	h2 no orders
-	//- else 
-	//- 	ul
-	//- 		each ord in orders
-	//- 			li 
-	//- 				h1 #{ord._id}
-	//- 				ul
-	//- 					each item in ord.products
-	//- 						li product name:  #{item.title}
-	//- 						li product qty: #{item.orderItem.quantity}
-	//- 						li product price: #{item.price}
+	if orders.length <= 0
+		h2 no orders
+	else 
+		ul
+			each ord in orders
+				li 
+					h1 #{ord._id}
+					ul
+						each item in ord.items
+							li product name:  #{item.title}
+							li product qty: #{item.qty}
+							li product price: #{item.price}
