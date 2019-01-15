@@ -3,7 +3,6 @@ const User = require('../models/user.js');
 const msg = require('../util/messagelog.js');
  
 
-const code_loc = 'shop_controller';
 
 exports.getHome = (req, res, next) => {
 
@@ -16,7 +15,7 @@ exports.getHome = (req, res, next) => {
         })
     })
     .catch(err=>{
-        msg.err(err);
+        msg.err(err,'shop_cntrl');
     });
 };
 
@@ -32,7 +31,7 @@ exports.getProductDetail = (req, res, next) => {
         });
     })
     .catch(err=>{
-        msg.err(err);
+        msg.err(err,'shop_cntrl');
     });
 };
 
@@ -48,34 +47,26 @@ exports.getCart = (req, res, next) => {
         });
     })
     .catch(err=>{
-        msg.err(err);
+        msg.err(err,'shop_cntrl');
     })
 };
 
-// exports.postCartDelItem = (req, res, next) => {
+exports.postCartDelItem = (req, res, next) => {
 
-//     const itemId = req.body.prodId;
+    const itemId = req.body.prodId;
     
-//     let fetchedCart;
+    let fetchedCart;
 
-//     req.user.getCart()
-//     .then(cart=>{
-//         fetchedCart = cart;
-//         return fetchedCart.getProducts({
-//             where:{id: itemId}
-//         });
-//     })
-//     .then(products=>{
-//         let product = products[0];
-//         return product.cartItem.destroy();
-//     })
-//     .then(()=>{
-//         res.redirect('/cart');
-//     })
-//     .catch(err=>{
-//         console.log(chalk.red(err));
-//     })    
-// }
+    req.user.deleteItemFromCart(itemId)
+    .then(result=>{
+        msg.success(result,'shop_cntrl');
+        res.redirect('/cart');
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    })
+  
+}
 
 exports.postAddToCart = (req, res, next) => {
     const itemToAddId = req.body.productId;
@@ -86,11 +77,9 @@ exports.postAddToCart = (req, res, next) => {
         res.end();
     })
     .catch(err=>{
-        msg.err(err);
-    })
-
-    res.redirect('/home');
-}
+        msg.err(err,'shop_cntrl');
+    });
+};
 
 // exports.getOrder = (req,res,next) =>{
 

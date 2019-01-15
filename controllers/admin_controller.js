@@ -1,8 +1,7 @@
 const Product = require('../models/product.js');
 const msg = require('../util/messagelog.js');
 
-//logging
-const code_loc = 'admin_controller';
+;
 
 exports.getProducts = (req, res, next) => {
 
@@ -15,7 +14,7 @@ exports.getProducts = (req, res, next) => {
         })
     })
     .catch(err=>{
-        msg.err(err);
+        msg.err(err,'adm_cntrl');
     })
 }
 
@@ -41,14 +40,14 @@ exports.postAddProduct = (req, res, next) => {
     	const prod = new Product(userId,title,+price,desc,imgUrl= "https://picsum.photos/150/150/?random");
 	    prod.save()
 	    .then(result=>{
-	    	msg.success('new product added',code_loc);
+	    	msg.success('new product added','adm_cntrl');
             res.redirect('/admin/products');
 	    })
 	    .catch(err=>{
-	    	msg.err(err,code_loc);
+	    	msg.err(err,'adm_cntrl');
 	    })
     } catch(e) {
-    	msg.err(e,code_loc);
+    	msg.err(e,'adm_cntrl');
     }
 };
 
@@ -58,14 +57,14 @@ exports.postDeleteProduct = (req, res, next) => {
     try {
         Product.deleteProductById(productId)
         .then(result=>{
-            msg.success('product successfully deleted', code_loc);
+            msg.success('product successfully deleted', 'adm_cntrl');
             res.redirect('/admin/products');
         })
         .catch(err=>{
-            msg.err(err);
+            msg.err('adm_cntrl');
         })
     } catch(e) {
-         msg.err(e,code_loc);
+         msg.err(e,'adm_cntrl');
     }
     
     
@@ -83,7 +82,7 @@ exports.getEditProduct = (req, res, next) => {
             })
         })
     } catch(e) {
-        msg.err(e,code_loc);
+        msg.err(e,'adm_cntrl');
     }
 };
 
@@ -100,14 +99,14 @@ exports.postEditProduct = (req, res, next) => {
     try {
          Product.updateProductById(productId,prodChanges)
         .then(result=>{
-            msg.success('updated product successfully',code_loc);
+            msg.success('updated product successfully','adm_cntrl');
             res.redirect('/admin/products');
         })
         .catch(err=>{
-            msg.err(err,code_loc);
+            msg.err(err,'adm_cntrl');
         })
     } catch(e) {
-        msg.err(e,code_loc);
+        msg.err(e,'adm_cntrl');
     }
 }
 
