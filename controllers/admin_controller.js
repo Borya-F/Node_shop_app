@@ -91,7 +91,7 @@ exports.postEditProduct = (req, res, next) => {
 
     const prodChanges = {
         title: req.body.title,
-        price: req.body.price,
+        price: +req.body.price,
         desc: req.body.desc,
         imgUrl: req.body.imgURL
     }

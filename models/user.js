@@ -47,8 +47,8 @@ class User {
                             qty: this.cart.items.find(item => {
                                 return item.product.toString() === prod._id.toString();
                             }).qty
-                        }
-                    })
+                        };
+                    });
                 })
                 .then(protoProds => {
                     resolve(protoProds);
@@ -133,20 +133,43 @@ class User {
 
     addOrder() {
     	return new Promise((resolve,reject)=>{
+
     		getDB()
     		.then(db=>{
-    			const passedDB = getDB();
+
+    			const passedDB = Promise.resolve(db);
+
+    			const prodIds = this.cart.items.map(item=>{
+    				return item.product
+    			});
+
+    			const products = db.collection('products').find({
+    				"_id": { $in: prodIds}
+    			}).toArray();
+
+    			return Promise.all([passedDB,products]);
+    		})
+    		.then(([db,products])=>{
+
+    			const passedDB = Promise.resolve(db);
+    			
+    			const orderItems = products.map(prod => {
+                        return { ...prod,
+                            qty: this.cart.items.find(item => {
+                                return item.product.toString() === prod._id.toString();
+                            }).qty
+                        };
+                    });
+
 
     			const orderToAdd = {
-    				items: [...this.cart.items],
+    				items: [...orderItems],
     				userId: ObjectId(this._id)
-    				
-    			}
+    			};
 
-    			this.cart = {items: []}; //reset local cart
-    			const orderAddition = db.collection('orders').insertOne(orderToAdd);
+    			const addOrderPromise = db.collection('orders').insertOne(orderToAdd);
 
-    			return Promise.all([passedDB,orderAddition]);
+    			return Promise.all([passedDB,addOrderPromise]);
     		})
     		.then(([db,result])=>{
     			return db.collection('users').updateOne({
@@ -156,19 +179,26 @@ class User {
     					cart: {items: []}
     				}
     			})
-
     		})
     		.then(result=>{
-    			resolve('successfully moved items from cart to order');
+    			this.cart = {items: []}; //reset local cart if all promisses resolve.
+    			resolve('items successfully migrated from cart to order');
     		})
     		.catch(err=>{
-    			reject(err);
+    			reject(err,'userModel');
     		});
     	});
     };
 
     getOrders() {
     	return new Promise((resolve,reject)=>{
+
+    		//get an array of orders
+    		//orders.items is an array of objects containing productid and qty.
+    		//get an array of the unique products in the items
+
+
+
     		getDB()
     		.then(db=>{
     			return db.collection('orders').find({
