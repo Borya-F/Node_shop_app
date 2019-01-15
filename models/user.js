@@ -131,6 +131,43 @@ class User {
     	});
     };
 
+    addOrder() {
+    	return new Promise((resolve,reject)=>{
+    		getDB()
+    		.then(db=>{
+    			const passedDB = getDB();
+    			const orderAddition = db.collection('orders').insertOne(this.cart);
+
+    			return Promise.all([passedDB,orderAddition]);
+    		})
+    		.then(([db,result])=>{
+    			return db.collection('users').updateOne({
+    				"_id": ObjectId(this._id)
+    			},{
+    				$set: {
+    					cart: {items: []}
+    				}
+    			})
+
+    		})
+    		.then(result=>{
+    			resolve('successfully moved items from cart to order');
+    		})
+    		.catch(err=>{
+    			reject(err);
+    		});
+    	});
+    };
+
+    // getOrderItems() {
+    // 	return new Promise((resolve,reject)=>{
+    // 		getDB
+    // 		.then(db=>{
+    // 			db.
+    // 		})
+    // 	})
+    // }
+
 
 
     static fetchUserById(id) {

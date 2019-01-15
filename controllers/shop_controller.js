@@ -74,69 +74,35 @@ exports.postAddToCart = (req, res, next) => {
     req.user.addToCart(itemToAddId)
     .then(result=>{
         msg.success(result,'shop_cntrl');
-        res.end();
+        res.redirect('/orders');
     })
     .catch(err=>{
         msg.err(err,'shop_cntrl');
     });
 };
 
-// exports.getOrder = (req,res,next) =>{
+exports.getOrder = (req,res,next) =>{
 
-//     req.user.getOrders({
-//         include: ['products']
-//     })
-//     .then(orders=>{
-//         res.render('shop/orders',{
-//             pageTitle: 'orders',
-//             activeNav: 'orders',
-//             orders: orders
-//         })
-//     })
-//     .catch(err=>{
-//         console.log(chalk.red(err));
-//     });
+    res.render('shop/orders',{
+        pageTitle: 'order page',
+        activeNav: 'orders',
+        orders: []
+    })
     
-// };
+};
 
-// exports.postAddToOrder = (req,res,next)=>{
+exports.postAddToOrder = (req,res,next)=>{
 
-//     let fetchedCart;
-
-//     req.user.getCart()
-//     .then(cart=>{
-//         fetchedCart = cart;
-//         return cart.getProducts();
-//     })
-//     .then(cartProducts=>{
-//         return req.user.createOrder({
-//             id: gen_id.generate_hex_id()
-//         })
-//         .then(order=>{
-//             return order.addProducts(cartProducts.map(product=>{
-//                 product.orderItem = {
-//                     id: gen_id.generate_hex_id(),
-//                     quantity: product.cartItem.quantity
-//                 };
-//                 return product;
-//             }));
-//         })
-//         .catch(err=>{
-//             console.log(chalk.red(err));
-//         })
-//     })
-//     .then(result=>{
-//         return fetchedCart.setProducts(null);
-        
-//     })
-//     .then(result=>{
-//         res.redirect('/orders');
-//     })
-//     .catch(err=>{
-//         console.log(chalk.red(err));
-//     })
+    req.user.addOrder()
+    .then(result=>{
+        msg.status(result,'shop_cntrl');
+        res.end();
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    })
     
-// };
+};
 
 
 
