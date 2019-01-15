@@ -83,6 +83,7 @@ exports.postAddToCart = (req, res, next) => {
     req.user.addToCart(itemToAddId)
     .then(result=>{
         msg.success(result,'shop_cntrl');
+        res.end();
     })
     .catch(err=>{
         msg.err(err);
