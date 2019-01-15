@@ -1,15 +1,19 @@
 extends ../layouts/main_layout.pug
 
+block styles
+	link(rel="stylesheet", href="/css/cart.css")
+
 block content
 	if orders.length <= 0
 		h2 no orders
 	else 
-		ul
+		ul.cart__item-list
 			each ord in orders
-				li 
+				li.cart__item
 					h1 #{ord._id}
 					ul
 						each item in ord.items
 							li product name:  #{item.title}
 							li product qty: #{item.qty}
 							li product price: #{item.price}
+				hr
