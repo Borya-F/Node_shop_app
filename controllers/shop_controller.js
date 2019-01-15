@@ -74,19 +74,26 @@ exports.postAddToCart = (req, res, next) => {
     req.user.addToCart(itemToAddId)
     .then(result=>{
         msg.success(result,'shop_cntrl');
-        res.redirect('/orders');
+        res.redirect('/home');
     })
     .catch(err=>{
         msg.err(err,'shop_cntrl');
     });
 };
 
-exports.getOrder = (req,res,next) =>{
+exports.getOrder = (req,res,next) => {
 
-    res.render('shop/orders',{
-        pageTitle: 'order page',
-        activeNav: 'orders',
-        orders: []
+    req.user.getOrders()
+    .then(orders=>{
+        msg.test(orders,'shop_control');
+        res.render('shop/orders',{
+            pageTitle: 'ordersPage',
+            activeNav: 'orders'
+            // orders: orders
+        })
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
     })
     
 };

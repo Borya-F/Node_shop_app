@@ -136,7 +136,15 @@ class User {
     		getDB()
     		.then(db=>{
     			const passedDB = getDB();
-    			const orderAddition = db.collection('orders').insertOne(this.cart);
+
+    			const orderToAdd = {
+    				items: [...this.cart.items],
+    				userId: ObjectId(this._id)
+    				
+    			}
+
+    			this.cart = {items: []}; //reset local cart
+    			const orderAddition = db.collection('orders').insertOne(orderToAdd);
 
     			return Promise.all([passedDB,orderAddition]);
     		})
@@ -159,14 +167,23 @@ class User {
     	});
     };
 
-    // getOrderItems() {
-    // 	return new Promise((resolve,reject)=>{
-    // 		getDB
-    // 		.then(db=>{
-    // 			db.
-    // 		})
-    // 	})
-    // }
+    getOrders() {
+    	return new Promise((resolve,reject)=>{
+    		getDB()
+    		.then(db=>{
+    			return db.collection('orders').find({
+    				"userId": ObjectId(this._id)
+    			}).toArray();
+    		})
+    		.then(orders=>{
+    			resolve(orders);
+    		})
+    		.catch(err=>{
+    			reject(err);
+    		})
+
+    	})
+    }
 
 
 
