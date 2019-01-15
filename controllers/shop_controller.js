@@ -6,6 +6,7 @@ const msg = require('../util/messagelog.js');
 
 exports.getHome = (req, res, next) => {
 
+    msg.test(process.pid,'shopcntl');
     Product.fetchAll()
     .then(products=>{
         res.render('shop/shop',{
