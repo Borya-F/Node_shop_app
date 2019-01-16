@@ -20,21 +20,21 @@ exports.getHome = (req, res, next) => {
     });
 };
 
-// exports.getProductDetail = (req, res, next) => {
+exports.getProductDetail = (req, res, next) => {
 
-//     const prodId = req.params.id;
+    const prodId = req.params.id;
 
-//     Product.fetchProductById(prodId)
-//     .then(fetchedProd=>{
-//         res.render('shop/product_detail',{
-//             pageTitle: fetchedProd.title,
-//             product: fetchedProd
-//         });
-//     })
-//     .catch(err=>{
-//         msg.err(err,'shop_cntrl');
-//     });
-// };
+    Product.findById(prodId)
+    .then(fetchedProd=>{
+        res.render('shop/product_detail',{
+            pageTitle: fetchedProd.title,
+            product: fetchedProd
+        });
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    });
+};
 
 // exports.getCart = (req, res, next) => {
 

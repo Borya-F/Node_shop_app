@@ -75,21 +75,21 @@ exports.postAddProduct = (req, res, next) => {
     
 // };
 
-// exports.getEditProduct = (req, res, next) => {
-//     const productId = req.params.id;
+exports.getEditProduct = (req, res, next) => {
+    const productId = req.params.id;
 
-//     try {
-//         Product.fetchProductById(productId)
-//         .then(product=>{
-//             res.render('admin/edit_product',{
-//                 pageTitle: 'edit product',
-//                 product: product
-//             })
-//         })
-//     } catch(e) {
-//         msg.err(e,'adm_cntrl');
-//     }
-// };
+    try {
+        Product.findById(productId)
+        .then(product=>{
+            res.render('admin/edit_product',{
+                pageTitle: 'edit product',
+                product: product
+            })
+        })
+    } catch(e) {
+        msg.err(e,'adm_cntrl');
+    }
+};
 
 // exports.postEditProduct = (req, res, next) => {
 //     const productId = req.params.id;
