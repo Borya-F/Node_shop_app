@@ -29,7 +29,7 @@ if (cluster.isMaster) {
     const sharedController = require('./controllers/sharedController.js');
 
     //userModel
-    // const User = require('./models/user.js');
+    const User = require('./models/user.js');
 
 
     // parameters
@@ -52,25 +52,29 @@ if (cluster.isMaster) {
     //path to static files
     app.use(express.static(path.join(__dirname, 'public')));
 
-    // app.use((req, res, next) => {
-    //     User.fetchUserById("5c3cc2ad82aac51570ed1e3c")
-    //         .then(fetchedUser => {
-    //             if (fetchedUser === null) {
-    //                 log.err('no such user found->creating new user', 'server');
-    //                 const newUser = new User('testuser', 'testuser@email', { items: [] }, null);
-    //                 newUser.save();
-    //             } else {
-    //                 log.success(`user found -> attaching to req with id: ${fetchedUser._id}`, 'server');
-    //                 req.user = new User(fetchedUser.name, fetchedUser.email, fetchedUser.cart, fetchedUser._id);
-    //             }
+    app.use((req,res,next)=>{
+        User.findById('5c3f4b7d841944a830382cb3')
+        .then(fetchedUser=>{
+            if(fetchedUser === null){
+                log.err('no such user found->creating new user', 'server');
 
-    //             next();
-    //         })
-    //         .catch(err => {
-    //             log.err(err);
-    //             next();
-    //         });
-    // })
+                const mockUser = new User({
+                    name: 'mockUser',
+                    email: 'mockUser@test.com'
+                });
+                mockUser.save();
+            }else{
+                log.success(`user found -> attaching to req on process ${process.pid} with id: ${fetchedUser._id}`, 'server');
+                req.user = fetchedUser;
+            };
+
+            next(); 
+        })
+        .catch(err=>{
+            log.err(err);
+            next();
+        });
+    });
 
     //Routes instantiation
     app.use(shopRoutes);
@@ -80,6 +84,7 @@ if (cluster.isMaster) {
 
     mongoose.connect(db.admin_uri,{ useNewUrlParser: true })
     .then(client=>{
+
         app.listen(dev_port);
         log.status(`Process ${process.pid} is listening on port ${dev_port}`, 'server');
     })

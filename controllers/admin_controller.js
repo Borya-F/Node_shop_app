@@ -6,16 +6,16 @@ const msg = require('../util/messagelog.js');
 exports.getProducts = (req, res, next) => {
 
     Product.find()
-    .then(products=>{
-        res.render('admin/admin_products',{
-            pageTitle: 'adminProducts',
-            activeNav: 'admin-products',
-            prods: products
+        .then(products => {
+            res.render('admin/admin_products', {
+                pageTitle: 'adminProducts',
+                activeNav: 'admin-products',
+                prods: products
+            })
         })
-    })
-    .catch(err=>{
-        msg.err(err,'adm_cntrl');
-    })
+        .catch(err => {
+            msg.err(err, 'adm_cntrl');
+        })
 }
 
 
@@ -36,59 +36,57 @@ exports.postAddProduct = (req, res, next) => {
     const desc = req.body.desc;
     const imgUrl = req.body.imgURL;
 
-    try {
-    	const prod = new Product({
-    		title: title,
-    		price: price,
-    		desc: desc,
-    		imgUrl: "https://picsum.photos/150/150/?random"
-    	})
-	    prod.save()
-	    .then(result=>{
-	    	msg.success('new product added','adm_cntrl');
+
+    const prod = new Product({
+        title: title,
+        price: price,
+        desc: desc,
+        imgUrl: "https://picsum.photos/150/150/?random"
+    })
+    prod.save()
+        .then(result => {
+            msg.success('new product added', 'adm_cntrl');
             res.redirect('/admin/products');
-	    })
-	    .catch(err=>{
-	    	msg.err(err,'adm_cntrl');
-	    })
-    } catch(e) {
-    	msg.err(e,'adm_cntrl');
-    }
+        })
+        .catch(err => {
+            msg.err(err, 'adm_cntrl');
+        })
+
 };
 
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.params.id;
 
     Product.findById(productId)
-    .then(product=>{
-        return product.remove();
-    })
-    .then(result=>{
-        msg.success('product successfully removed','adm_cntrl');
-        res.redirect('/admin/products');
-    })
-    .catch(err=>{
-        msg.err(err,'adm_cntrl');
-    });
-    
-    
+        .then(product => {
+            return product.remove();
+        })
+        .then(result => {
+            msg.success('product successfully removed', 'adm_cntrl');
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            msg.err(err, 'adm_cntrl');
+        });
+
+
 };
 
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.id;
 
- 
+
     Product.findById(productId)
-    .then(product=>{
-        res.render('admin/edit_product',{
-            pageTitle: 'edit product',
-            product: product
+        .then(product => {
+            res.render('admin/edit_product', {
+                pageTitle: 'edit product',
+                product: product
+            })
         })
-    })
-    .catch(err=>{
-        msg.err(err,'adm_contrl');
-    });
-    
+        .catch(err => {
+            msg.err(err, 'adm_contrl');
+        });
+
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -102,23 +100,20 @@ exports.postEditProduct = (req, res, next) => {
     }
 
     Product.findById(productId)
-    .then(product=>{
-        product.title = prodChanges.title;
-        product.price = prodChanges.price;
-        product.desc = prodChanges.desc;
-        product.imgUrl = prodChanges.imgUrl;
-        product.updated = new Date();
+        .then(product => {
+            product.title = prodChanges.title;
+            product.price = prodChanges.price;
+            product.desc = prodChanges.desc;
+            product.imgUrl = prodChanges.imgUrl;
+            product.updated = new Date();
 
-        return product.save();
-    })
-    .then(result=>{
-        msg.success('product successfully updated','adm_cnrl');
-        res.redirect('/admin/products');
-    })
-    .catch(err=>{
-        msg.err(err,'adm_cntrl')
-    });
+            return product.save();
+        })
+        .then(result => {
+            msg.success('product successfully updated', 'adm_cnrl');
+            res.redirect('/admin/products');
+        })
+        .catch(err => {
+            msg.err(err, 'adm_cntrl')
+        });
 };
-
-
-
