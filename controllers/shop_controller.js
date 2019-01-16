@@ -1,23 +1,24 @@
-// const Product = require('../models/product.js');
+const Product = require('../models/product.js');
 // const User = require('../models/user.js');
-// const msg = require('../util/messagelog.js');
+const msg = require('../util/messagelog.js');
  
 
 
-// exports.getHome = (req, res, next) => {
+exports.getHome = (req, res, next) => {
 
-//     Product.fetchAll()
-//     .then(products=>{
-//         res.render('shop/shop',{
-//             pageTitle: 'Home',
-//             activeNav: 'home',
-//             prods: products
-//         })
-//     })
-//     .catch(err=>{
-//         msg.err(err,'shop_cntrl');
-//     });
-// };
+    Product.find()
+    .then(products=>{
+    	msg.test(products,'shop_cntrl');
+        res.render('shop/shop',{
+            pageTitle: 'Home',
+            activeNav: 'home',
+            prods: products
+        })
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    });
+};
 
 // exports.getProductDetail = (req, res, next) => {
 

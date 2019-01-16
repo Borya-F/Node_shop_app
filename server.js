@@ -78,18 +78,6 @@ if (cluster.isMaster) {
     app.use(sharedController.get404);
 
 
-
-    // db.mongoConnect()
-    //     .then(client => {
-    //         app.listen(dev_port);
-    //         log.status(`Process ${process.pid} is listening on port ${dev_port}`, 'server');
-
-    //         // client.close();
-    //     })
-    //     .catch(err => {
-    //         log.err(err, 'server');
-    //     })
-    //     
     mongoose.connect(db.admin_uri,{ useNewUrlParser: true })
     .then(client=>{
         app.listen(dev_port);

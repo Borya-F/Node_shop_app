@@ -1,22 +1,22 @@
 const Product = require('../models/product.js');
 const msg = require('../util/messagelog.js');
 
-// ;
 
-// exports.getProducts = (req, res, next) => {
 
-//     Product.fetchAll()
-//     .then(products=>{
-//         res.render('admin/admin_products',{
-//             pageTitle: 'adminProducts',
-//             activeNav: 'admin-products',
-//             prods: products
-//         })
-//     })
-//     .catch(err=>{
-//         msg.err(err,'adm_cntrl');
-//     })
-// }
+exports.getProducts = (req, res, next) => {
+
+    Product.find()
+    .then(products=>{
+        res.render('admin/admin_products',{
+            pageTitle: 'adminProducts',
+            activeNav: 'admin-products',
+            prods: products
+        })
+    })
+    .catch(err=>{
+        msg.err(err,'adm_cntrl');
+    })
+}
 
 
 exports.getAddProduct = (req, res, next) => {
@@ -30,14 +30,13 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 
-    const userId = req.user._id;
+    // const userId = req.user._id;
     const title = req.body.title;
     const price = req.body.price;
     const desc = req.body.desc;
-    let imgUrl = req.body.imgURL;
+    const imgUrl = req.body.imgURL;
 
     try {
-    	// const prod = new Product(userId,title,+price,desc,imgUrl= "https://picsum.photos/150/150/?random");
     	const prod = new Product({
     		title: title,
     		price: price,
