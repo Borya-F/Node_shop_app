@@ -22,8 +22,10 @@ const ProductSchema = new Schema({
     imgUrl:{
         type: String,
         default: "https://picsum.photos/150/150/?random"
+    },
+    updated:{
+        type: Date
     }
-
 });
 
 module.exports = mongoose.model('Product',ProductSchema);

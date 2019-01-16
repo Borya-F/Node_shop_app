@@ -56,64 +56,69 @@ exports.postAddProduct = (req, res, next) => {
     }
 };
 
-// exports.postDeleteProduct = (req, res, next) => {
-//     const productId = req.params.id;
+exports.postDeleteProduct = (req, res, next) => {
+    const productId = req.params.id;
 
-//     try {
-//         Product.deleteProductById(productId)
-//         .then(result=>{
-//             msg.success('product successfully deleted', 'adm_cntrl');
-//             res.redirect('/admin/products');
-//         })
-//         .catch(err=>{
-//             msg.err('adm_cntrl');
-//         })
-//     } catch(e) {
-//          msg.err(e,'adm_cntrl');
-//     }
+    Product.findById(productId)
+    .then(product=>{
+        return product.remove();
+    })
+    .then(result=>{
+        msg.success('product successfully removed','adm_cntrl');
+        res.redirect('/admin/products');
+    })
+    .catch(err=>{
+        msg.err(err,'adm_cntrl');
+    });
     
     
-// };
+};
 
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.id;
 
-    try {
-        Product.findById(productId)
-        .then(product=>{
-            res.render('admin/edit_product',{
-                pageTitle: 'edit product',
-                product: product
-            })
+ 
+    Product.findById(productId)
+    .then(product=>{
+        res.render('admin/edit_product',{
+            pageTitle: 'edit product',
+            product: product
         })
-    } catch(e) {
-        msg.err(e,'adm_cntrl');
-    }
+    })
+    .catch(err=>{
+        msg.err(err,'adm_contrl');
+    });
+    
 };
 
-// exports.postEditProduct = (req, res, next) => {
-//     const productId = req.params.id;
+exports.postEditProduct = (req, res, next) => {
+    const productId = req.params.id;
 
-//     const prodChanges = {
-//         title: req.body.title,
-//         price: +req.body.price,
-//         desc: req.body.desc,
-//         imgUrl: req.body.imgURL
-//     }
+    const prodChanges = {
+        title: req.body.title,
+        price: req.body.price,
+        desc: req.body.desc,
+        imgUrl: req.body.imgURL
+    }
 
-//     try {
-//          Product.updateProductById(productId,prodChanges)
-//         .then(result=>{
-//             msg.success('updated product successfully','adm_cntrl');
-//             res.redirect('/admin/products');
-//         })
-//         .catch(err=>{
-//             msg.err(err,'adm_cntrl');
-//         })
-//     } catch(e) {
-//         msg.err(e,'adm_cntrl');
-//     }
-// }
+    Product.findById(productId)
+    .then(product=>{
+        product.title = prodChanges.title;
+        product.price = prodChanges.price;
+        product.desc = prodChanges.desc;
+        product.imgUrl = prodChanges.imgUrl;
+        product.updated = new Date();
+
+        return product.save();
+    })
+    .then(result=>{
+        msg.success('product successfully updated','adm_cnrl');
+        res.redirect('/admin/products');
+    })
+    .catch(err=>{
+        msg.err(err,'adm_cntrl')
+    });
+};
 
 
 
