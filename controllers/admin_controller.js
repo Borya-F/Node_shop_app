@@ -30,7 +30,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 
-    // const userId = req.user._id;
+    const userId = req.user._id;
     const title = req.body.title;
     const price = req.body.price;
     const desc = req.body.desc;
@@ -41,7 +41,8 @@ exports.postAddProduct = (req, res, next) => {
         title: title,
         price: price,
         desc: desc,
-        imgUrl: "https://picsum.photos/150/150/?random"
+        imgUrl: "https://picsum.photos/150/150/?random",
+        userId: userId
     })
     prod.save()
         .then(result => {

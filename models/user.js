@@ -21,6 +21,7 @@ const UserSchema = new Schema({
         items: [{
             productId: {
                 type: Schema.Types.ObjectId,
+                ref: "Product",
                 required: true
             },
             qty: {
@@ -28,39 +29,42 @@ const UserSchema = new Schema({
                 required: true
             }
         }],
-        default: {items:[]}
     }
 });
 
+UserSchema.methods.addToCart = function(productId){
+
+	msg.test(productId,'user model');
+
+	const cartItemIndex = this.cart.items.findIndex(item => {
+        return item.productId.toString() === productId;
+    });
+
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items];
+
+    if (cartItemIndex >= 0) {
+        newQuantity = ++updatedCartItems[cartItemIndex].qty;
+    } else {
+        updatedCartItems.push({
+            productId: productId,
+            qty: newQuantity
+        });
+    };
+
+    const updatedCart = {
+        items: updatedCartItems
+    };
+
+    this.cart = updatedCart;
+
+    return this.save();
+
+};
+
 module.exports = mongoose.model('User', UserSchema);
 
-// class User {
-//     constructor(username, email, cart, id = null) {
-//         this.name = username;
-//         this.email = email;
-//         this.cart = cart;
 
-//         if (id === null) {
-//             this._id = new ObjectId();
-//         } else {
-//             this._id = id;
-//         }
-//     };
-
-//     save() {
-//         return new Promise((resolve, reject) => {
-//             getDB()
-//                 .then(db => {
-//                     return db.collection('users').insertOne(this);
-//                 })
-//                 .then(result => {
-//                     resolve(result);
-//                 })
-//                 .catch(err => {
-//                     reject(err);
-//                 });
-//         });
-//     };
 
 //     getCart() {
 //         return new Promise((resolve, reject) => {

@@ -69,18 +69,19 @@ exports.getProductDetail = (req, res, next) => {
   
 // }
 
-// exports.postAddToCart = (req, res, next) => {
-//     const itemToAddId = req.body.productId;
+exports.postAddToCart = (req, res, next) => {
+    const itemToAdd = req.body.productId;
+    msg.test(itemToAdd,'shop_cntrl');
 
-//     req.user.addToCart(itemToAddId)
-//     .then(result=>{
-//         msg.success(result,'shop_cntrl');
-//         res.redirect('/home');
-//     })
-//     .catch(err=>{
-//         msg.err(err,'shop_cntrl');
-//     });
-// };
+    req.user.addToCart(itemToAdd)
+    .then(result=>{
+        msg.success(result,'shop_cntrl');
+        res.redirect('/home');
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    });
+};
 
 // exports.getOrder = (req,res,next) => {
 
