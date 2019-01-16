@@ -41,8 +41,7 @@ exports.getCart = (req, res, next) => {
     req.user.populate('cart.items.productId')
     .execPopulate()
     .then(user=>{
-
-        msg.test(user,'shop_cntrl');
+        
         res.render('shop/cart',{
             pageTitle: 'cart',
             activeNav: 'cart',
@@ -54,30 +53,26 @@ exports.getCart = (req, res, next) => {
     });
 };
 
-// exports.postCartDelItem = (req, res, next) => {
+exports.postCartDelItem = (req, res, next) => {
 
-//     const itemId = req.body.prodId;
+    const itemId = req.body.prodId;
     
-//     let fetchedCart;
-
-//     req.user.deleteItemFromCart(itemId)
-//     .then(result=>{
-//         msg.success(result,'shop_cntrl');
-//         res.redirect('/cart');
-//     })
-//     .catch(err=>{
-//         msg.err(err,'shop_cntrl');
-//     })
-  
-// }
+    req.user.deleteItemFromCart(itemId)
+    .then(result=>{
+        msg.success('successfully deleted item from cart','shop_cntrl');
+        res.redirect('/cart');
+    })
+    .catch(err=>{
+        msg.err(err,'shop_cntrl');
+    });
+};
 
 exports.postAddToCart = (req, res, next) => {
     const itemToAdd = req.body.productId;
-    msg.test(itemToAdd,'shop_cntrl');
 
     req.user.addToCart(itemToAdd)
     .then(result=>{
-        msg.success(result,'shop_cntrl');
+        msg.success('added item to cart successfully','shop_cntrl');
         res.redirect('/home');
     })
     .catch(err=>{

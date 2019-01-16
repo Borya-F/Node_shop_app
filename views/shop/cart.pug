@@ -11,7 +11,7 @@ block content
 					h1 product: #{prod.productId.title} 
 					h2 quantity: #{prod.qty}
 					form(action='/cartDeleteItem', method="POST")
-						input(type="hidden", value=prod._id, name="prodId")
+						input(type="hidden", value=prod.productId._id, name="prodId")
 						button.btn(type="submit") remove from Cart
 		hr
 		div.centered
