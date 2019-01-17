@@ -12,8 +12,8 @@ block content
 				li.cart__item
 					h1 #{ord._id}
 					ul
-						each item in ord.items
-							li product name:  #{item.title}
+						each item in ord.products
+							li product name:  #{item.productData.title}
 							li product qty: #{item.qty}
-							li product price: #{item.price}
+							li product price: #{item.productData.price}
 				hr
