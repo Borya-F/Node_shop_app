@@ -125,7 +125,10 @@ exports.postAddToOrder = (req,res,next)=>{
 
     })
     .then(result=>{
-        res.redirect('/home');
+        return req.user.clearCart();
+    })
+    .then(result=>{
+        res.redirect('/orders');
     })
     .catch(err=>{
         msg.err(err);
